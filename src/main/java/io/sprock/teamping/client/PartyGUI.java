@@ -1,8 +1,19 @@
 package io.sprock.teamping.client;
 
-import static io.sprock.teamping.TeamPing.*;
-import static io.sprock.teamping.client.SendData.*;
-import static io.sprock.teamping.listeners.EventListener.*;
+import static io.sprock.teamping.TeamPing.GitVersion;
+import static io.sprock.teamping.TeamPing.MOD_ID;
+import static io.sprock.teamping.TeamPing.VERSION;
+import static io.sprock.teamping.TeamPing.hidetext;
+import static io.sprock.teamping.TeamPing.isInParty;
+import static io.sprock.teamping.TeamPing.partyName;
+import static io.sprock.teamping.TeamPing.partyPlayers;
+import static io.sprock.teamping.client.SendData.banFromParty;
+import static io.sprock.teamping.client.SendData.connectedPlayers;
+import static io.sprock.teamping.client.SendData.joinParty;
+import static io.sprock.teamping.client.SendData.kickFromParty;
+import static io.sprock.teamping.client.SendData.leaveParty;
+import static io.sprock.teamping.client.SendData.promotePartyMember;
+import static io.sprock.teamping.listeners.EventListener.connectedtoserver;
 import static io.sprock.teamping.util.UtilMethods.isMouseOver;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
@@ -27,7 +38,7 @@ public class PartyGUI extends GuiScreen {
   private GuiTextFieldHiddenText partyNameField;
   private GuiButton joinButton;
   private GuiButton copyButton;
-  private GuiButton connectButton;
+
   private GuiCheckBox hidecheckbox;
   private GuiCheckBox randomcheckbox;
   private Boolean israndom = false;
@@ -43,7 +54,6 @@ public class PartyGUI extends GuiScreen {
     joinButton.displayString = isInParty?"Disconnect":"Join/Create";
     copyButton.enabled = isInParty;
     copyButton.visible = isInParty;
-    connectButton.enabled = !connecting && (conattempts != 3);
     partyNameField.setEnabled(!israndom && !isInParty);
     partyNameField.setHideText(hidetext);
     if (!isInParty) {
@@ -77,12 +87,12 @@ public class PartyGUI extends GuiScreen {
     buttonList.add(hidecheckbox = new GuiCheckBox(1, rwidth/2+2, posY + 50, "", hidetext));
     buttonList.add(randomcheckbox = new GuiCheckBox(2, rwidth/2+36, posY + 50, "", israndom));
     buttonList.add(copyButton = new GuiButton(3, rwidth/2+36, posY + 46, 45, 20, "Copy"));
-    buttonList.add(connectButton = new GuiButton(4, posX + 67, posY1-26, 103, 20, "Connect to server"));
+
     randomcheckbox.enabled = !isInParty;
     randomcheckbox.visible = !isInParty;
     copyButton.enabled = isInParty;
     copyButton.visible = isInParty;
-    connectButton.enabled = !connecting && (conattempts != 3);
+
     connectedPlayers();
     super.initGui();
   }
@@ -154,15 +164,7 @@ public class PartyGUI extends GuiScreen {
     drawTexturedModalRect(posX, posY1-32, 176, 0, 64, 32);
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    if (!connecting) {
-      drawTexturedModalRect(posX + 42, posY1-26, 176, 32, 10, 10);
-      fontRendererObj.drawString("Con: N/A", posX + 4, posY1-15, 3158064);
-    }
-    else {
-      drawTexturedModalRect(posX + 42, posY1 - 26, 176, 42, 10, 10);
-      fontRendererObj.drawString("Con: " + playerCount, posX + 4, posY1-15, 3158064);
-    }
-    fontRendererObj.drawString("Status:", posX + 4, posY1-25, 3158064);
+
     GlStateManager.color(255, 255, 255, 255);
     super.drawScreen(mouseX, mouseY, partialTicks);
   }
