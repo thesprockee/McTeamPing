@@ -2,15 +2,17 @@
   {
     "modid": "teamping",
     "name": "TeamPing",
-    "description": "Ping mod like in Portal 2/other multiplayer games.",
+    "description": "Minecraft Mod to mark/ping via party chat.",
     "version": "${version}",
     "mcversion": "${mcversion}",
-    "url": "https://github.com/AquUpd",
+    "url": "https://github.com/thesprockee/McTeamPing",
     "updateUrl": "",
     "authorList": [
+      "babsld",
+      "sprockee",
       "Aqua_tic(AqUpd)"
     ],
-    "credits": "Clyred and nekoli",
+    "credits": "Aqua_tic(AqUpd), Clyred, nekoli",
     "dependencies": [],
     "logoFile": "icon.png"
   }
