@@ -45,7 +45,6 @@ public class RenderPingInWorld {
       mc.renderEngine.bindTexture(new ResourceLocation(MOD_ID, "textures/gui/pings.png"));
       if (pings.size() != 0) {
         for (JsonObject data: pings) {
-          try {
             JsonArray jblock = data.get("bp").getAsJsonArray();
             JsonArray jcolor = data.get("color").getAsJsonArray();
             String type = data.get("type").getAsString();
@@ -109,7 +108,6 @@ public class RenderPingInWorld {
                   break;
               }
             }
-          } catch (Exception ignored) {}
         }
       }
     } catch(Exception e) {
