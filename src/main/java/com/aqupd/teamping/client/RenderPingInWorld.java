@@ -46,11 +46,12 @@ public class RenderPingInWorld {
       if (pings.size() != 0) {
         for (JsonObject data: pings) {
             JsonArray jblock = data.get("bp").getAsJsonArray();
-            JsonArray jcolor = data.get("color").getAsJsonArray();
+            //JsonArray jcolor = data.get("color").getAsJsonArray();
             String type = data.get("type").getAsString();
             boolean isEntity = data.get("isEntity").getAsBoolean();
 
-            Color color = new Color(jcolor.get(0).getAsInt(), jcolor.get(1).getAsInt(), jcolor.get(2).getAsInt());
+            //Color color = new Color(jcolor.get(0).getAsInt(), jcolor.get(1).getAsInt(), jcolor.get(2).getAsInt());
+            Color color = new Color(255, 255, 255);
             BlockPos bp = new BlockPos(jblock.get(0).getAsInt(), jblock.get(1).getAsInt(), jblock.get(2).getAsInt());
 
             double dist = distanceTo3D(e, bp);
