@@ -1,25 +1,17 @@
 package io.sprock.teamping.listeners;
 
-import static io.sprock.teamping.TeamPing.GitVersion;
 import static io.sprock.teamping.TeamPing.LOGGER;
-import static io.sprock.teamping.TeamPing.isInParty;
-import static io.sprock.teamping.TeamPing.partyPlayers;
 import static io.sprock.teamping.TeamPing.pings;
-import static io.sprock.teamping.TeamPing.playerCount;
 import static io.sprock.teamping.client.PingSelector.cX;
 import static io.sprock.teamping.client.PingSelector.cY;
-import static io.sprock.teamping.client.SendData.leaveParty;
 import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
 import static io.sprock.teamping.util.Configuration.debug;
 import static io.sprock.teamping.util.UtilMethods.isValidJsonObject;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
@@ -198,34 +190,6 @@ public class EventListener {
 				playsound[1] = playerpos[1] - blockps[1];
 				playsound[2] = playerpos[2] - blockps[2];
 				break;
-			case "party":
-				switch (jo.get("subtype").getAsString()) {
-				case "list":
-					isInParty = true;
-					ArrayList<String> newPartyPlayers = new ArrayList<>();
-					JsonArray ja = jo.get("players").getAsJsonArray();
-					for(JsonElement je: ja) newPartyPlayers.add(je.getAsString());
-					partyPlayers = newPartyPlayers;
-					break;
-				case "kickmessage":
-					isInParty = false;
-					partyPlayers.clear();
-					leaveParty();
-					switch (jo.get("message").getAsString()) {
-					case "kicked":
-						LOGGER.info("you got kicked from the party");
-						break;
-					case "banned":
-						LOGGER.info("you got banned from the party");
-						break;
-					case "playerlimit":
-						LOGGER.info("Party is full");
-					}
-				}
-				break;
-			case "list":
-				playerCount = jo.get("connected").getAsInt();
-				GitVersion = jo.get("version").getAsString();
 			}
 
 		}

@@ -7,12 +7,6 @@ import static io.sprock.teamping.TeamPing.hidetext;
 import static io.sprock.teamping.TeamPing.isInParty;
 import static io.sprock.teamping.TeamPing.partyName;
 import static io.sprock.teamping.TeamPing.partyPlayers;
-import static io.sprock.teamping.client.SendData.banFromParty;
-import static io.sprock.teamping.client.SendData.connectedPlayers;
-import static io.sprock.teamping.client.SendData.joinParty;
-import static io.sprock.teamping.client.SendData.kickFromParty;
-import static io.sprock.teamping.client.SendData.leaveParty;
-import static io.sprock.teamping.client.SendData.promotePartyMember;
 import static io.sprock.teamping.listeners.EventListener.connectedtoserver;
 import static io.sprock.teamping.util.UtilMethods.isMouseOver;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
@@ -93,7 +87,7 @@ public class PartyGUI extends GuiScreen {
     copyButton.enabled = isInParty;
     copyButton.visible = isInParty;
 
-    connectedPlayers();
+
     super.initGui();
   }
 
@@ -174,13 +168,13 @@ public class PartyGUI extends GuiScreen {
     switch (button.id) {
       case 0:
         if (isInParty) {
-          leaveParty();
+
           isInParty = false;
           partyPlayers.clear();
         } else {
           israndom = false;
           randomcheckbox.setIsChecked(false);
-          joinParty(partyName);
+
         }
         break;
       case 3:
@@ -204,13 +198,13 @@ public class PartyGUI extends GuiScreen {
         int ypos = posY + 82 + 13 * i;
         if (!s.equals(mc.thePlayer.getName())) {
           if (isMouseOver(mouseX, mouseY, xpos + 123, ypos, 12, 12)) {
-            banFromParty(s);
+
             mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
           } else if (isMouseOver(mouseX, mouseY, xpos + 136, ypos, 12, 12)) {
-            kickFromParty(s);
+
             mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
           } else if (isMouseOver(mouseX, mouseY, xpos + 149, ypos, 12, 12)) {
-            promotePartyMember(s);
+
             mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
           }
         }

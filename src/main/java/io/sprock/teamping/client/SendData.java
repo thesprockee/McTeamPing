@@ -1,14 +1,10 @@
 package io.sprock.teamping.client;
 
-import static io.sprock.teamping.TeamPing.isInParty;
-import static io.sprock.teamping.TeamPing.partyName;
-import static io.sprock.teamping.TeamPing.partyPlayers;
 import static java.lang.Math.min;
 
 import java.util.List;
 import java.util.UUID;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -52,57 +48,6 @@ public class SendData {
 
       lastpingtime = System.currentTimeMillis();
     }
-  }
-
-  public static void joinParty(String partyname) {
-    JsonObject data = new JsonObject();
-    data.add("datatype", new JsonPrimitive("party"));
-    data.add("subtype", new JsonPrimitive("connect"));
-    data.add("partyname", new JsonPrimitive(partyname));
-    Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
-      partyName = partyname;
-
-  }
-
-  public static void leaveParty() {
-    JsonObject data = new JsonObject();
-    data.add("datatype", new JsonPrimitive("party"));
-    data.add("subtype", new JsonPrimitive("disconnect"));
-    Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
-    if (isInParty) {
-      isInParty = false;
-      partyPlayers.clear();
-    }
-  }
-
-  public static void connectedPlayers() {
-    JsonObject data = new JsonObject();
-    data.add("datatype", new JsonPrimitive("list"));
-    Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
-  }
-
-  public static void kickFromParty(String name) {
-    JsonObject data = new JsonObject();
-    data.add("datatype", new JsonPrimitive("party"));
-    data.add("subtype", new JsonPrimitive("kick"));
-    data.add("nick", new JsonPrimitive(name));
-    Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
-  }
-
-  public static void banFromParty(String name) {
-    JsonObject data = new JsonObject();
-    data.add("datatype", new JsonPrimitive("party"));
-    data.add("subtype", new JsonPrimitive("ban"));
-    data.add("nick", new JsonPrimitive(name));
-    Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
-  }
-
-  public static void promotePartyMember(String name) {
-    JsonObject data = new JsonObject();
-    data.add("datatype", new JsonPrimitive("party"));
-    data.add("subtype", new JsonPrimitive("promote"));
-    data.add("nick", new JsonPrimitive(name));
-    Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
   }
 
   private static MovingObjectPosition getMouseOverExtended(float dist) {
