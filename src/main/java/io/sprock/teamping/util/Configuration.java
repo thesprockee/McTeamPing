@@ -1,6 +1,6 @@
-package com.aqupd.teamping.util;
+package io.sprock.teamping.util;
 
-import static com.aqupd.teamping.TeamPing.LOGGER;
+import static io.sprock.teamping.TeamPing.LOGGER;
 
 import java.io.*;
 import java.nio.file.Files;

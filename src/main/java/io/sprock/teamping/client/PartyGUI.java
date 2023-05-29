@@ -1,17 +1,18 @@
-package com.aqupd.teamping.client;
+package io.sprock.teamping.client;
 
-import static com.aqupd.teamping.TeamPing.*;
-import static com.aqupd.teamping.client.SendData.*;
-import static com.aqupd.teamping.listeners.EventListener.*;
-import static com.aqupd.teamping.util.UtilMethods.isMouseOver;
+import static io.sprock.teamping.TeamPing.*;
+import static io.sprock.teamping.client.SendData.*;
+import static io.sprock.teamping.listeners.EventListener.*;
+import static io.sprock.teamping.util.UtilMethods.isMouseOver;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 
-import com.aqupd.teamping.util.GuiTextFieldHiddenText;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
+
+import io.sprock.teamping.util.GuiTextFieldHiddenText;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiButton;

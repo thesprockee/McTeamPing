@@ -1,4 +1,4 @@
-package com.aqupd.teamping.util;
+package io.sprock.teamping.util;
 
 import java.util.function.Predicate;
 import net.minecraft.client.gui.FontRenderer;

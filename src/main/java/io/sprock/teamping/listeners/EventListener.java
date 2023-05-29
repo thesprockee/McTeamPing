@@ -1,32 +1,32 @@
-package com.aqupd.teamping.listeners;
+package io.sprock.teamping.listeners;
 
-import static com.aqupd.teamping.TeamPing.GitVersion;
-import static com.aqupd.teamping.TeamPing.LOGGER;
-import static com.aqupd.teamping.TeamPing.isInParty;
-import static com.aqupd.teamping.TeamPing.partyPlayers;
-import static com.aqupd.teamping.TeamPing.pings;
-import static com.aqupd.teamping.TeamPing.playerCount;
-import static com.aqupd.teamping.client.PingSelector.cX;
-import static com.aqupd.teamping.client.PingSelector.cY;
-import static com.aqupd.teamping.client.SendData.leaveParty;
-import static com.aqupd.teamping.registrations.KeyBindings.keyBindings;
-import static com.aqupd.teamping.util.Configuration.debug;
-import static com.aqupd.teamping.util.UtilMethods.isValidJsonObject;
+import static io.sprock.teamping.TeamPing.GitVersion;
+import static io.sprock.teamping.TeamPing.LOGGER;
+import static io.sprock.teamping.TeamPing.isInParty;
+import static io.sprock.teamping.TeamPing.partyPlayers;
+import static io.sprock.teamping.TeamPing.pings;
+import static io.sprock.teamping.TeamPing.playerCount;
+import static io.sprock.teamping.client.PingSelector.cX;
+import static io.sprock.teamping.client.PingSelector.cY;
+import static io.sprock.teamping.client.SendData.leaveParty;
+import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
+import static io.sprock.teamping.util.Configuration.debug;
+import static io.sprock.teamping.util.UtilMethods.isValidJsonObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.aqupd.teamping.client.PartyGUI;
-import com.aqupd.teamping.client.PingManager;
-import com.aqupd.teamping.client.PingSelector;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
+import io.sprock.teamping.client.PartyGUI;
+import io.sprock.teamping.client.PingManager;
+import io.sprock.teamping.client.PingSelector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiChat;

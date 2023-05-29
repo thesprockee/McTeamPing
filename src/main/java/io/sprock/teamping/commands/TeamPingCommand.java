@@ -1,8 +1,8 @@
-package com.aqupd.teamping.commands;
+package io.sprock.teamping.commands;
 
-import static com.aqupd.teamping.TeamPing.*;
-import static com.aqupd.teamping.client.SendData.*;
-import static com.aqupd.teamping.listeners.EventListener.*;
+import static io.sprock.teamping.TeamPing.*;
+import static io.sprock.teamping.client.SendData.*;
+import static io.sprock.teamping.listeners.EventListener.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

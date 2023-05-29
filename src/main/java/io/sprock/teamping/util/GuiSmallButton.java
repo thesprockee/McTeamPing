@@ -1,6 +1,6 @@
-package com.aqupd.teamping.util;
+package io.sprock.teamping.util;
 
-import static com.aqupd.teamping.TeamPing.MOD_ID;
+import static io.sprock.teamping.TeamPing.MOD_ID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;

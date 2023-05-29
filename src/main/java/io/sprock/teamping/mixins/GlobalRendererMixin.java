@@ -1,11 +1,12 @@
-package com.aqupd.teamping.mixins;
+package io.sprock.teamping.mixins;
 
-import com.aqupd.teamping.client.RenderPingInWorld;
 import net.minecraft.client.renderer.EntityRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import io.sprock.teamping.client.RenderPingInWorld;
 
 @Mixin(EntityRenderer.class)
 public class GlobalRendererMixin {

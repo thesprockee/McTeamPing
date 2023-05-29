@@ -1,8 +1,8 @@
-package com.aqupd.teamping.client;
+package io.sprock.teamping.client;
 
 
-import static com.aqupd.teamping.TeamPing.*;
-import static com.aqupd.teamping.listeners.EventListener.connecting;
+import static io.sprock.teamping.TeamPing.*;
+import static io.sprock.teamping.listeners.EventListener.connecting;
 import static java.lang.Math.*;
 
 import com.google.gson.JsonArray;

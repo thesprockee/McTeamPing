@@ -1,4 +1,4 @@
-package com.aqupd.teamping.registrations;
+package io.sprock.teamping.registrations;
 
 import org.lwjgl.input.Keyboard;
 

@@ -1,12 +1,12 @@
-package com.aqupd.teamping.client;
+package io.sprock.teamping.client;
 
-import static com.aqupd.teamping.TeamPing.MOD_ID;
-import static com.aqupd.teamping.TeamPing.partyName;
-import static com.aqupd.teamping.TeamPing.pingidnames;
-import static com.aqupd.teamping.client.SendData.pingBlock;
-import static com.aqupd.teamping.listeners.EventListener.guimenu;
-import static com.aqupd.teamping.listeners.EventListener.timer;
-import static com.aqupd.teamping.registrations.KeyBindings.keyBindings;
+import static io.sprock.teamping.TeamPing.MOD_ID;
+import static io.sprock.teamping.TeamPing.partyName;
+import static io.sprock.teamping.TeamPing.pingidnames;
+import static io.sprock.teamping.client.SendData.pingBlock;
+import static io.sprock.teamping.listeners.EventListener.guimenu;
+import static io.sprock.teamping.listeners.EventListener.timer;
+import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
 import static java.lang.Math.PI;
 import static java.lang.Math.atan2;
 import static java.lang.Math.cos;

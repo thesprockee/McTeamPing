@@ -1,4 +1,4 @@
-package com.aqupd.teamping;
+package io.sprock.teamping;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -8,12 +8,12 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.aqupd.teamping.commands.TeamPingCommand;
-import com.aqupd.teamping.listeners.EventListener;
-import com.aqupd.teamping.registrations.KeyBindings;
-import com.aqupd.teamping.util.Configuration;
 import com.google.gson.JsonObject;
 
+import io.sprock.teamping.commands.TeamPingCommand;
+import io.sprock.teamping.listeners.EventListener;
+import io.sprock.teamping.registrations.KeyBindings;
+import io.sprock.teamping.util.Configuration;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;

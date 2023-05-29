@@ -1,8 +1,9 @@
-package com.aqupd.teamping.util;
-
-import static com.aqupd.teamping.listeners.EventListener.ticks;
+package io.sprock.teamping.util;
 
 import com.google.gson.JsonParser;
+
+import static io.sprock.teamping.listeners.EventListener.ticks;
+
 import java.awt.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;

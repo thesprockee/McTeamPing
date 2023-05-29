@@ -1,8 +1,9 @@
-package com.aqupd.teamping.client;
-
-import static com.aqupd.teamping.TeamPing.pings;
+package io.sprock.teamping.client;
 
 import com.google.gson.JsonObject;
+
+import static io.sprock.teamping.TeamPing.pings;
+
 import java.util.Iterator;
 
 public class PingManager {
