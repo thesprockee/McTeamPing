@@ -26,7 +26,7 @@ public class TeamPing {
 	public static final Logger LOGGER = LogManager.getLogger("AqUpd's " + MOD_NAME);
 	public static final String[] pingidnames = new String[]{"here", "notice", "question", "no", "yes", "defend", "attack", "mine"};
 	public static List<JsonObject> pings = new ArrayList<>();
-	public static String partyName = "Your party id";
+	public static String partyName = "default";
 	public static String GitVersion = "N/A";
 	public static int playerCount = 0;
 	public static boolean hidetext = false;
