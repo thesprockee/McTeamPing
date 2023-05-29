@@ -1,10 +1,16 @@
 {
-  "package": "com.aqupd.teamping.mixins",
-  "refmap": "mixins.teamping.refmap.json",
-  "compatibilityLevel": "JAVA_8",
-  "client": [
-    "GlobalRendererMixin",
-    "GuiScreenMixin",
-    "MinecraftMixin"
-  ]
+	"required": true,
+	"package": "com.aqupd.teamping.mixins",
+	"refmap": "mixins.teamping.refmap.json",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [],
+	"client": [
+		"GlobalRendererMixin",
+		"GuiScreenMixin",
+		"MinecraftMixin"
+	],
+	"minVersion": "0.6",
+	"injectors": {
+		"defaultRequire": 1
+	}
 }
