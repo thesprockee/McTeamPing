@@ -1,10 +1,25 @@
 package com.aqupd.teamping.client;
 
-import static com.aqupd.teamping.TeamPing.*;
-import static com.aqupd.teamping.client.SendData.*;
-import static com.aqupd.teamping.listeners.EventListener.*;
-import static java.lang.Math.*;
+import static com.aqupd.teamping.TeamPing.MOD_ID;
+import static com.aqupd.teamping.TeamPing.partyName;
+import static com.aqupd.teamping.TeamPing.pingidnames;
+import static com.aqupd.teamping.client.SendData.pingBlock;
+import static com.aqupd.teamping.listeners.EventListener.guimenu;
+import static com.aqupd.teamping.listeners.EventListener.timer;
 import static com.aqupd.teamping.registrations.KeyBindings.keyBindings;
+import static java.lang.Math.PI;
+import static java.lang.Math.atan2;
+import static java.lang.Math.cos;
+import static java.lang.Math.floor;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.pow;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.toDegrees;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -14,8 +29,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 @SuppressWarnings("IntegerDivisionInFloatingPointContext")
 public class PingSelector {

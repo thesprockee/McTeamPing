@@ -1,21 +1,32 @@
 package com.aqupd.teamping.listeners;
 
-import static com.aqupd.teamping.TeamPing.*;
-import static com.aqupd.teamping.client.PingSelector.*;
-import static com.aqupd.teamping.client.SendData.*;
+import static com.aqupd.teamping.TeamPing.GitVersion;
+import static com.aqupd.teamping.TeamPing.LOGGER;
+import static com.aqupd.teamping.TeamPing.isInParty;
+import static com.aqupd.teamping.TeamPing.partyPlayers;
+import static com.aqupd.teamping.TeamPing.pings;
+import static com.aqupd.teamping.TeamPing.playerCount;
+import static com.aqupd.teamping.client.PingSelector.cX;
+import static com.aqupd.teamping.client.PingSelector.cY;
+import static com.aqupd.teamping.client.SendData.leaveParty;
 import static com.aqupd.teamping.registrations.KeyBindings.keyBindings;
 import static com.aqupd.teamping.util.Configuration.debug;
 import static com.aqupd.teamping.util.UtilMethods.isValidJsonObject;
 
-import com.aqupd.teamping.client.ClientThreads;
-import com.aqupd.teamping.client.PingManager;
-import com.aqupd.teamping.client.PingSelector;
-import com.aqupd.teamping.client.PartyGUI;
-import com.google.gson.JsonObject;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.aqupd.teamping.client.PartyGUI;
+import com.aqupd.teamping.client.PingManager;
+import com.aqupd.teamping.client.PingSelector;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiChat;
@@ -49,6 +60,7 @@ public class EventListener {
 	public static String openChatString = "";
 
 	private static Pattern chatDataPattern = Pattern.compile("<([a-zA-Z0-9_]+)> (\\{.+\\})");
+
 
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
