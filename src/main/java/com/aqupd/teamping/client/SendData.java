@@ -1,5 +1,6 @@
 package com.aqupd.teamping.client;
 
+
 import static com.aqupd.teamping.TeamPing.*;
 import static com.aqupd.teamping.listeners.EventListener.connecting;
 import static java.lang.Math.*;
@@ -44,12 +45,10 @@ public class SendData {
 
       data.add("bp", blockpos);
       data.add("type", new JsonPrimitive(type));
-      data.add("uuid", new JsonPrimitive(UUID.randomUUID().toString()));
-
-      if (connecting) {
-        PrintWriter printWriter = new PrintWriter(outputStream, true);
-        printWriter.println(data);
-      }
+      data.add("uuid", new JsonPrimitive(UUID.randomUUID().toString().substring(0,6)));
+   
+      Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
+      
       lastpingtime = System.currentTimeMillis();
     }
   }
@@ -59,21 +58,16 @@ public class SendData {
     data.add("datatype", new JsonPrimitive("party"));
     data.add("subtype", new JsonPrimitive("connect"));
     data.add("partyname", new JsonPrimitive(partyname));
-    if (connecting) {
-      PrintWriter printWriter = new PrintWriter(outputStream, true);
-      printWriter.println(data);
+    Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
       partyName = partyname;
-    }
+
   }
 
   public static void leaveParty() {
     JsonObject data = new JsonObject();
     data.add("datatype", new JsonPrimitive("party"));
     data.add("subtype", new JsonPrimitive("disconnect"));
-    if (connecting) {
-      PrintWriter printWriter = new PrintWriter(outputStream, true);
-      printWriter.println(data);
-    }
+    Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
     if (isInParty) {
       isInParty = false;
       partyPlayers.clear();
@@ -83,10 +77,7 @@ public class SendData {
   public static void connectedPlayers() {
     JsonObject data = new JsonObject();
     data.add("datatype", new JsonPrimitive("list"));
-    if (connecting) {
-      PrintWriter printWriter = new PrintWriter(outputStream, true);
-      printWriter.println(data);
-    }
+    Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
   }
 
   public static void kickFromParty(String name) {
@@ -94,10 +85,7 @@ public class SendData {
     data.add("datatype", new JsonPrimitive("party"));
     data.add("subtype", new JsonPrimitive("kick"));
     data.add("nick", new JsonPrimitive(name));
-    if (connecting) {
-      PrintWriter printWriter = new PrintWriter(outputStream, true);
-      printWriter.println(data);
-    }
+    Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
   }
 
   public static void banFromParty(String name) {
@@ -105,10 +93,7 @@ public class SendData {
     data.add("datatype", new JsonPrimitive("party"));
     data.add("subtype", new JsonPrimitive("ban"));
     data.add("nick", new JsonPrimitive(name));
-    if (connecting) {
-      PrintWriter printWriter = new PrintWriter(outputStream, true);
-      printWriter.println(data);
-    }
+    Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
   }
 
   public static void promotePartyMember(String name) {
@@ -116,10 +101,7 @@ public class SendData {
     data.add("datatype", new JsonPrimitive("party"));
     data.add("subtype", new JsonPrimitive("promote"));
     data.add("nick", new JsonPrimitive(name));
-    if (connecting) {
-      PrintWriter printWriter = new PrintWriter(outputStream, true);
-      printWriter.println(data);
-    }
+    Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
   }
 
   private static MovingObjectPosition getMouseOverExtended(float dist) {

@@ -5,6 +5,7 @@ import static com.aqupd.teamping.client.PingSelector.*;
 import static com.aqupd.teamping.client.SendData.*;
 import static com.aqupd.teamping.setup.Registrations.keyBindings;
 import static com.aqupd.teamping.util.Configuration.debug;
+import static com.aqupd.teamping.util.UtilMethods.isValidJsonObject;
 
 import com.aqupd.teamping.client.ClientThreads;
 import com.aqupd.teamping.client.PingManager;
@@ -12,7 +13,6 @@ import com.aqupd.teamping.client.PingSelector;
 import com.aqupd.teamping.client.PartyGUI;
 import com.google.gson.JsonObject;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +36,6 @@ public class EventListener {
 	public static boolean connectedtoserver = false;
 	private boolean clearpings = false;
 
-	public static Socket socket;
 	public static boolean connecting = false;
 	public static boolean guimenu = false;
 	public static boolean stoppingmc = false;
@@ -48,6 +47,8 @@ public class EventListener {
 	public static long openChatTime = 0;
 	public static boolean openChat = false;
 	public static String openChatString = "";
+
+	private static Pattern chatDataPattern = Pattern.compile("<([a-zA-Z0-9_]+)> (\\{.+\\})");
 
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
@@ -73,24 +74,12 @@ public class EventListener {
 		}
 	}
 
+
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onPlayerTickEvent(TickEvent.PlayerTickEvent event) {
 		if (event.player instanceof EntityPlayerSP) {
-			if (connectedtoserver) {
-				connectedtoserver = false;
-				if (!connecting && !stoppingmc) {
-					connecting = true;
-					try {
-						socket = new Socket(debug ? "localhost" : "vps.theaq.one", 28754);
-						new ClientThreads(socket, event.player, debug);
-					} catch (IOException ex) {
-						connecting = false;
-						LOGGER.error("Server error", ex);
-					}
-					conattempts++;
-				}
-			}
+
 			if (openChat && System.currentTimeMillis() - openChatTime > 50) {
 				Minecraft.getMinecraft().displayGuiScreen(new GuiChat(openChatString));
 				openChatTime = 0;
@@ -152,6 +141,81 @@ public class EventListener {
 			IChatComponent component = new ChatComponentText("\nClick to join party with " + partyid + " id");
 			component.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/teamping join " + partyid)).setColor(EnumChatFormatting.GRAY);
 			event.message.appendSibling(component);
+		}
+	}
+
+
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent
+	public void onChat(ClientChatReceivedEvent event) {
+		if (event.type == 0x2) {
+			return; // ignore actionbar messages
+		}
+
+		Matcher matcher = chatDataPattern.matcher(event.message.getUnformattedText().trim());
+
+		if (matcher.find()) {
+
+			String jsonPayload = matcher.group(2);
+			if (!isValidJsonObject(jsonPayload)) {
+				LOGGER.error("invalid json: " + jsonPayload);
+				return;
+			}
+
+			LOGGER.info("JSON Payload: " + jsonPayload);
+
+			event.setCanceled(true);
+
+			JsonObject jo = new JsonParser().parse(jsonPayload).getAsJsonObject();
+			switch (jo.get("datatype").getAsString()) {
+			case "ping":
+				jo.add("time", new JsonPrimitive(System.currentTimeMillis()));
+				pings.add(jo);
+
+				Integer[] playerpos = new Integer[3];
+				playerpos[0] = Minecraft.getMinecraft().thePlayer.getPosition().getX();
+				playerpos[1] = Minecraft.getMinecraft().thePlayer.getPosition().getY();
+				playerpos[2] = Minecraft.getMinecraft().thePlayer.getPosition().getZ();
+
+				Integer[] blockps = new Integer[3];
+				blockps[0] = Math.min(2, Math.max(-2, playerpos[0] - jo.get("bp").getAsJsonArray().get(0).getAsInt()));
+				blockps[1] = Math.min(2, Math.max(-2, playerpos[1] - jo.get("bp").getAsJsonArray().get(1).getAsInt()));
+				blockps[2] = Math.min(2, Math.max(-2, playerpos[2] - jo.get("bp").getAsJsonArray().get(2).getAsInt()));
+
+				playsound[0] = playerpos[0] - blockps[0];
+				playsound[1] = playerpos[1] - blockps[1];
+				playsound[2] = playerpos[2] - blockps[2];
+				break;
+			case "party":
+				switch (jo.get("subtype").getAsString()) {
+				case "list":
+					isInParty = true;
+					ArrayList<String> newPartyPlayers = new ArrayList<>();
+					JsonArray ja = jo.get("players").getAsJsonArray();
+					for(JsonElement je: ja) newPartyPlayers.add(je.getAsString());
+					partyPlayers = newPartyPlayers;
+					break;
+				case "kickmessage":
+					isInParty = false;
+					partyPlayers.clear();
+					leaveParty();
+					switch (jo.get("message").getAsString()) {
+					case "kicked":
+						LOGGER.info("you got kicked from the party");
+						break;
+					case "banned":
+						LOGGER.info("you got banned from the party");
+						break;
+					case "playerlimit":
+						LOGGER.info("Party is full");
+					}
+				}
+				break;
+			case "list":
+				playerCount = jo.get("connected").getAsInt();
+				GitVersion = jo.get("version").getAsString();
+			}
+
 		}
 	}
 }
