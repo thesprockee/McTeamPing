@@ -5,6 +5,7 @@ import static java.lang.Math.min;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
