@@ -14,7 +14,7 @@ classes
 *.iws
 *.iml
 .idea
-
+logs/
 # Gradle
 build
 .gradle
