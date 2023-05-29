@@ -3,8 +3,8 @@ package com.aqupd.teamping.client;
 import static com.aqupd.teamping.TeamPing.*;
 import static com.aqupd.teamping.client.SendData.*;
 import static com.aqupd.teamping.listeners.EventListener.*;
-import static com.aqupd.teamping.setup.Registrations.keyBindings;
 import static java.lang.Math.*;
+import static com.aqupd.teamping.registrations.KeyBindings.keyBindings;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

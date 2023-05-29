@@ -2,13 +2,13 @@ package com.aqupd.teamping;
 
 import com.aqupd.teamping.commands.TeamPingCommand;
 import com.aqupd.teamping.listeners.EventListener;
-import com.aqupd.teamping.setup.Registrations;
 import com.aqupd.teamping.util.Configuration;
 import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import com.aqupd.teamping.registrations.KeyBindings;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -36,7 +36,7 @@ public class TeamPing {
 	private final EventListener eventListener;
 
 	public TeamPing() throws IOException {
-		Registrations.init();
+		KeyBindings.initialize();
 		this.eventListener = new EventListener();
 		Configuration.loadOptions();
 	}

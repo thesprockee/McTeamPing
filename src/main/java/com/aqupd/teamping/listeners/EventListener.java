@@ -3,7 +3,7 @@ package com.aqupd.teamping.listeners;
 import static com.aqupd.teamping.TeamPing.*;
 import static com.aqupd.teamping.client.PingSelector.*;
 import static com.aqupd.teamping.client.SendData.*;
-import static com.aqupd.teamping.setup.Registrations.keyBindings;
+import static com.aqupd.teamping.registrations.KeyBindings.keyBindings;
 import static com.aqupd.teamping.util.Configuration.debug;
 import static com.aqupd.teamping.util.UtilMethods.isValidJsonObject;
 
