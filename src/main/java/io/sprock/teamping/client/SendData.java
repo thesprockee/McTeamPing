@@ -1,16 +1,17 @@
 package io.sprock.teamping.client;
 
+import static io.sprock.teamping.TeamPing.isInParty;
+import static io.sprock.teamping.TeamPing.partyName;
+import static io.sprock.teamping.TeamPing.partyPlayers;
+import static java.lang.Math.min;
 
-import static io.sprock.teamping.TeamPing.*;
-import static io.sprock.teamping.listeners.EventListener.connecting;
-import static java.lang.Math.*;
+import java.util.List;
+import java.util.UUID;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.UUID;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
@@ -46,9 +47,9 @@ public class SendData {
       data.add("bp", blockpos);
       data.add("type", new JsonPrimitive(type));
       data.add("uuid", new JsonPrimitive(UUID.randomUUID().toString().substring(0,6)));
-   
+
       Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
-      
+
       lastpingtime = System.currentTimeMillis();
     }
   }
