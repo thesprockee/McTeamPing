@@ -1,15 +1,48 @@
-# TeamPing (Beta)
-### 1.8.9 and license is required
+# TeamPing
 
-Mod that allows you to ping blocks to your team.
-![text](https://i.imgur.com/tMp5lBr.png)
+## Introduction
 
-## Keybindings:
+Provides in-world location markers (pings) to all party members via party chat.
+
+## Requirements
+
+  * Minecraft 1.8.9
+
+## Installation
+
+
+## Development Environment
+
+```sh
+./gradlew.bat setupDecompWorkspace
+```
+
+For eclipse:
+```sh
+gradlew eclipse
+```
+
+import the gradle project in Eclipse.
+
+
+If at any point you are missing libraries in your IDE, or you've run into
+problems you can run "gradlew --refresh-dependencies" to refresh the local
+cache. "gradlew clean" to reset everything {this does not effect your code} and
+then start the processs again.
+
+Add the following to your program arguments:
+```
+--tweakClass org.spongepowered.asm.launch.MixinTweaker --mixin mixins.teamping.json
+```
+
+## Usage
+
+### Keybindings:
 * F - ping blocks
 * U - clear the pings
 * ; - open Party Menu
 
-## Commands:
+### Commands:
 * /teamping - shows all commands
 * /teamping join \<partyid\> - join the party with an id whose length is in [3, 32] range
 * /teamping leave - leave the party
@@ -21,8 +54,6 @@ Mod that allows you to ping blocks to your team.
 * /teamping status - shows status of connection to the TeamPing server
 * /teamping genInvText - puts invitation link to the chatbox
 
-## For me
-Need to put this thing into CLI arguments of Minecraft Client configuration
-```
---tweakClass org.spongepowered.asm.launch.MixinTweaker --mixin mixins.teamping.json --username Aqua_tic
-```
+## Acknowledgements
+
+* Original code and design by [https://github.com/Ivan-Khar](Ivan Kh)
