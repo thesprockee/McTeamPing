@@ -12,12 +12,18 @@ buildscript {
     }
 }
 
-apply plugin: 'java'
+plugins {
+    id 'com.palantir.git-version' version '3.0.0'
+}
+
+apply plugin: 'eclipse'
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
 
-version = "0.1.2"
+version gitVersion()
+
 group = "io.sprock"
 archivesBaseName = "teamping"
 String modid = "teamping"
@@ -28,6 +34,12 @@ compileJava.options.encoding = 'UTF-8'
 minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"
     runDir = "run"
+
+    replace "@VERSION@", project.version
+    replaceIn "src/main/java/io/sprock/teamping/TeamPing.java"
+
+    //clientRunArgs += "--username=${username}"
+
     mappings = "stable_22"
     makeObfSourceJar = false
 }
@@ -69,6 +81,17 @@ mixin {
     add sourceSets.main, "mixins.${modid}.refmap.json"
 }
 
+
+task versionGen {
+	def versionFile = "$buildDir/resources/version.txt"
+	outputs.upToDateWhen { false }
+	outputs.file(versionFile)
+	doLast {
+		new File(versionFile).text = """${gitVersion()}
+"""
+	}
+}
+
 shadowJar {
     archiveFileName = jar.archiveFileName
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -76,6 +99,7 @@ shadowJar {
 }
 
 jar {
+    dependsOn versionGen
     manifest.attributes(
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "MixinConfigs": "mixins.${modid}.json",
