@@ -3,11 +3,6 @@ package io.sprock.teamping.client;
 import static java.lang.Math.min;
 
 import java.util.List;
-import java.util.UUID;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -21,31 +16,23 @@ public class SendData {
 
   public static void pingBlock(String type) {
     if ((System.currentTimeMillis() - lastpingtime) > 1000) {
-      JsonObject data = new JsonObject();
+
       int distance = min(Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16, 128);
       Entity e = getMouseOverExtended(distance).entityHit;
-
-      data.add("datatype", new JsonPrimitive("ping"));
 
       BlockPos bp;
       if (e != null) {
         bp = e.getPosition();
-        data.add("isEntity", new JsonPrimitive(true));
       } else {
         bp = getMouseOverExtended(distance).getBlockPos();
-        data.add("isEntity", new JsonPrimitive(false));
       }
+      String message = "p:" + String.join("/",
+    		  String.valueOf(bp.getX()),
+    		  String.valueOf(bp.getY()),
+    		  String.valueOf(bp.getZ())
+    		  );
 
-      JsonArray blockpos = new JsonArray();
-      blockpos.add(new JsonPrimitive(bp.getX()));
-      blockpos.add(new JsonPrimitive(bp.getY()));
-      blockpos.add(new JsonPrimitive(bp.getZ()));
-
-      data.add("bp", blockpos);
-      data.add("type", new JsonPrimitive(type));
-      data.add("uuid", new JsonPrimitive(UUID.randomUUID().toString().substring(0,6)));
-
-      Minecraft.getMinecraft().thePlayer.sendChatMessage(data.toString());
+      Minecraft.getMinecraft().thePlayer.sendChatMessage(message);
 
       lastpingtime = System.currentTimeMillis();
     }

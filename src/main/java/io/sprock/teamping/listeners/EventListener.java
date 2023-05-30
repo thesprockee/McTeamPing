@@ -6,14 +6,14 @@ import static io.sprock.teamping.client.PingSelector.cX;
 import static io.sprock.teamping.client.PingSelector.cY;
 import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
 import static io.sprock.teamping.util.Configuration.debug;
-import static io.sprock.teamping.util.UtilMethods.isValidJsonObject;
 
 import java.util.Iterator;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 import io.sprock.teamping.client.PartyGUI;
@@ -51,8 +51,7 @@ public class EventListener {
 	public static boolean openChat = false;
 	public static String openChatString = "";
 
-	private static Pattern chatDataPattern = Pattern.compile("<([a-zA-Z0-9_]+)> (\\{.+\\})");
-
+	private static Pattern chatPingPattern = Pattern.compile("p:([-0-9]{1,8})/([-0-9]{1,8})/([-0-9]{1,8})");
 
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
@@ -155,43 +154,45 @@ public class EventListener {
 		if (event.type == 0x2) {
 			return; // ignore actionbar messages
 		}
+		LOGGER.info("Received message: '" + event.message.getUnformattedText() + "'");
 
-		Matcher matcher = chatDataPattern.matcher(event.message.getUnformattedText().trim());
+		Matcher matcher = chatPingPattern.matcher(event.message.getUnformattedText().trim());
 
 		if (matcher.find()) {
-
-			String jsonPayload = matcher.group(2);
-			if (!isValidJsonObject(jsonPayload)) {
-				LOGGER.error("invalid json: " + jsonPayload);
-				return;
-			}
-
-			LOGGER.info("JSON Payload: " + jsonPayload);
-
 			event.setCanceled(true);
+			JsonObject data = new JsonObject();
+	        data.add("datatype", new JsonPrimitive("ping"));
 
-			JsonObject jo = new JsonParser().parse(jsonPayload).getAsJsonObject();
-			switch (jo.get("datatype").getAsString()) {
-			case "ping":
-				jo.add("time", new JsonPrimitive(System.currentTimeMillis()));
-				pings.add(jo);
+	        data.add("isEntity", new JsonPrimitive(false));
 
-				Integer[] playerpos = new Integer[3];
-				playerpos[0] = Minecraft.getMinecraft().thePlayer.getPosition().getX();
-				playerpos[1] = Minecraft.getMinecraft().thePlayer.getPosition().getY();
-				playerpos[2] = Minecraft.getMinecraft().thePlayer.getPosition().getZ();
+	        JsonArray blockpos = new JsonArray();
+	        blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(1))));
+	        blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(2))));
+	        blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(3))));
 
-				Integer[] blockps = new Integer[3];
-				blockps[0] = Math.min(2, Math.max(-2, playerpos[0] - jo.get("bp").getAsJsonArray().get(0).getAsInt()));
-				blockps[1] = Math.min(2, Math.max(-2, playerpos[1] - jo.get("bp").getAsJsonArray().get(1).getAsInt()));
-				blockps[2] = Math.min(2, Math.max(-2, playerpos[2] - jo.get("bp").getAsJsonArray().get(2).getAsInt()));
+	        data.add("bp", blockpos);
+	        data.add("type", new JsonPrimitive("here"));
+	        data.add("uuid", new JsonPrimitive(UUID.randomUUID().toString().substring(0,6)));
+			data.add("time", new JsonPrimitive(System.currentTimeMillis()));
 
-				playsound[0] = playerpos[0] - blockps[0];
-				playsound[1] = playerpos[1] - blockps[1];
-				playsound[2] = playerpos[2] - blockps[2];
-				break;
+			pings.add(data);
+
+			Integer[] playerpos = new Integer[3];
+			playerpos[0] = Minecraft.getMinecraft().thePlayer.getPosition().getX();
+			playerpos[1] = Minecraft.getMinecraft().thePlayer.getPosition().getY();
+			playerpos[2] = Minecraft.getMinecraft().thePlayer.getPosition().getZ();
+
+			Integer[] blockps = new Integer[3];
+			blockps[0] = Math.min(2, Math.max(-2, playerpos[0] - data.get("bp").getAsJsonArray().get(0).getAsInt()));
+			blockps[1] = Math.min(2, Math.max(-2, playerpos[1] - data.get("bp").getAsJsonArray().get(1).getAsInt()));
+			blockps[2] = Math.min(2, Math.max(-2, playerpos[2] - data.get("bp").getAsJsonArray().get(2).getAsInt()));
+
+			playsound[0] = playerpos[0] - blockps[0];
+			playsound[1] = playerpos[1] - blockps[1];
+			playsound[2] = playerpos[2] - blockps[2];
+
 			}
 
 		}
 	}
-}
+
