@@ -2,7 +2,7 @@ package io.sprock.teamping.client;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
 import static io.sprock.teamping.TeamPing.partyName;
-import static io.sprock.teamping.TeamPing.pingidnames;
+import static io.sprock.teamping.TeamPing.pingIds;
 import static io.sprock.teamping.client.SendData.pingBlock;
 import static io.sprock.teamping.listeners.EventListener.guimenu;
 import static io.sprock.teamping.listeners.EventListener.timer;
@@ -125,10 +125,10 @@ public class PingSelector {
         if (dist > 15) {
           pingid = (int) floor((angle-22.5)/45) + 1;
           if (pingid == 8) pingid = 0;
-          if (mc.gameSettings.keyBindAttack.isKeyDown() || !guimenu) pingBlock(pingidnames[pingid]);
+          if (mc.gameSettings.keyBindAttack.isKeyDown() || !guimenu) pingBlock(pingIds[pingid]);
           if (!guimenu) menu=false;
         } else {
-          if (mc.gameSettings.keyBindAttack.isKeyDown() || !guimenu) pingBlock("");
+          if (mc.gameSettings.keyBindAttack.isKeyDown() || !guimenu) pingBlock(pingIds[0]);
         }
         wr.begin(GL11.GL_POINTS, DefaultVertexFormats.POSITION_COLOR);
         GL11.glPointSize(4);

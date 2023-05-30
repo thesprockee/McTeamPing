@@ -104,28 +104,28 @@ public class RenderPingInWorld {
 
               wr.setTranslation(iPX + bx, iPY, iPZ + bz);
               switch (type) {
-                case "here":
+                case "x":
                   renderPing(trpy, 0, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks, bp);
                   break;
-                case "notice":
+                case "n":
                   renderPing(trpy, 1, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks, bp);
                   break;
-                case "question":
+                case "q":
                   renderPing(trpy, 2, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks, bp);
                   break;
-                case "no":
+                case "N":
                   renderPing(trpy, 3, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks, bp);
                   break;
-                case "yes":
+                case "Y":
                   renderPing(trpy, 4, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks, bp);
                   break;
-                case "defend":
+                case "d":
                   renderPing(trpy, 5, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks, bp);
                   break;
-                case "attack":
+                case "a":
                   renderPing(trpy, 6, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks, bp);
                   break;
-                case "mine":
+                case "m":
                   renderPing(trpy, 7, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks, bp);
                   break;
               }

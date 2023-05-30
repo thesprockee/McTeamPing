@@ -27,7 +27,18 @@ public class TeamPing {
 	public static final String MOD_NAME = "TeamPing";
 	public static final String VERSION = "@VERSION@";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
-	public static final String[] pingidnames = new String[]{"here", "notice", "question", "no", "yes", "defend", "attack", "mine"};
+	public static final String PING_HERE = "x";
+	public static final String PING_NOTICE = "n";
+	public static final String PING_QUESTION = "q";
+	public static final String PING_NO = "N";
+	public static final String PING_YES = "Y";
+	public static final String PING_DEFEND = "d";
+	public static final String PING_ATTACK = "a";
+	public static final String PING_MINE = "m";
+
+	public static final String[] pingIds = new String[] { PING_HERE, PING_NOTICE, PING_QUESTION, PING_NO, PING_YES,
+			PING_DEFEND, PING_ATTACK, PING_MINE };
+
 	public static List<JsonObject> pings = new ArrayList<>();
 	public static String partyName = "default";
 	public static String GitVersion = VERSION;

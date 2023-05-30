@@ -2,6 +2,7 @@ package io.sprock.teamping.client;
 
 import static java.lang.Math.min;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -10,6 +11,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
+
 
 public class SendData {
   public static long lastpingtime = 0;
@@ -21,18 +23,26 @@ public class SendData {
       Entity e = getMouseOverExtended(distance).entityHit;
 
       BlockPos bp;
+
       if (e != null) {
         bp = e.getPosition();
       } else {
         bp = getMouseOverExtended(distance).getBlockPos();
       }
-      String message = "p:" + String.join("/",
+      ArrayList<String> components = new ArrayList<String>();
+
+      components.add("p");
+
+      components.add(String.join("/",
     		  String.valueOf(bp.getX()),
     		  String.valueOf(bp.getY()),
     		  String.valueOf(bp.getZ())
-    		  );
+    		  ));
 
-      Minecraft.getMinecraft().thePlayer.sendChatMessage(message);
+      components.add(type);
+
+      Minecraft.getMinecraft().thePlayer.sendChatMessage(
+    		  String.join(":", components));
 
       lastpingtime = System.currentTimeMillis();
     }

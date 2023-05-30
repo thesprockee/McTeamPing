@@ -5,7 +5,6 @@ import static io.sprock.teamping.TeamPing.pings;
 import static io.sprock.teamping.client.PingSelector.cX;
 import static io.sprock.teamping.client.PingSelector.cY;
 import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
-import static io.sprock.teamping.util.Configuration.debug;
 
 import java.util.Iterator;
 import java.util.UUID;
@@ -22,16 +21,11 @@ import io.sprock.teamping.client.PingSelector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiChat;
-import net.minecraft.event.ClickEvent;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -51,7 +45,7 @@ public class EventListener {
 	public static boolean openChat = false;
 	public static String openChatString = "";
 
-	private static Pattern chatPingPattern = Pattern.compile("p:([-0-9]{1,8})/([-0-9]{1,8})/([-0-9]{1,8})");
+	private static Pattern chatPingPattern = Pattern.compile("p:([-0-9]{1,8})/([-0-9]{1,8})/([-0-9]{1,8}):([A-z])");
 
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
@@ -59,13 +53,6 @@ public class EventListener {
 		ticks = event.renderTickTime;
 	}
 
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public void onPlayerJoinServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-		if (!event.isLocal || debug) {
-			if (!connecting) connectedtoserver = true;
-		}
-	}
 
 	private long lastjoineventusage = 0;
 	@SideOnly(Side.CLIENT)
@@ -134,19 +121,6 @@ public class EventListener {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public void onChatMessage(ClientChatReceivedEvent event) {
-		String chattext = event.message.getFormattedText();
-		Matcher matcher = Pattern.compile("teamping:.{3,32}").matcher(chattext);
-		if(matcher.find()){
-			String partyid = matcher.group().substring(9);
-			IChatComponent component = new ChatComponentText("\nClick to join party with " + partyid + " id");
-			component.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/teamping join " + partyid)).setColor(EnumChatFormatting.GRAY);
-			event.message.appendSibling(component);
-		}
-	}
-
 
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
@@ -171,8 +145,8 @@ public class EventListener {
 	        blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(3))));
 
 	        data.add("bp", blockpos);
-	        data.add("type", new JsonPrimitive("here"));
-	        data.add("uuid", new JsonPrimitive(UUID.randomUUID().toString().substring(0,6)));
+	        data.add("type", new JsonPrimitive(matcher.group(4)));
+	        data.add("uuid", new JsonPrimitive(UUID.randomUUID().toString().substring(0, 6)));
 			data.add("time", new JsonPrimitive(System.currentTimeMillis()));
 
 			pings.add(data);
