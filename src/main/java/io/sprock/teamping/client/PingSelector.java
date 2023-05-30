@@ -122,7 +122,7 @@ public class PingSelector {
         cY = max(cY, -40);
         double angle = toDegrees((atan2(-cX, cY) + PI));
         double dist = sqrt(pow(cX, 2) + pow(cY, 2));
-        if (dist > 15) {
+        if (dist > 10) {
           pingid = (int) floor((angle-22.5)/45) + 1;
           if (pingid == 8) pingid = 0;
           if (mc.gameSettings.keyBindAttack.isKeyDown() || !guimenu) pingBlock(pingIds[pingid]);
