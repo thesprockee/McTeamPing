@@ -1,23 +1,40 @@
 package io.sprock.teamping.client;
 
-import static io.sprock.teamping.TeamPing.*;
-import static io.sprock.teamping.util.UtilMethods.*;
-import static java.lang.Math.*;
-import static net.minecraft.client.particle.EntityFX.*;
+import static io.sprock.teamping.TeamPing.MOD_ID;
+import static io.sprock.teamping.TeamPing.pings;
+import static io.sprock.teamping.util.UtilMethods.distanceTo2D;
+import static io.sprock.teamping.util.UtilMethods.distanceTo3D;
+import static java.lang.Math.PI;
+import static java.lang.Math.atan2;
+import static java.lang.Math.cos;
+import static java.lang.Math.min;
+import static java.lang.Math.sin;
+import static net.minecraft.client.particle.EntityFX.interpPosX;
+import static net.minecraft.client.particle.EntityFX.interpPosY;
+import static net.minecraft.client.particle.EntityFX.interpPosZ;
+
+import java.awt.Color;
+
+import org.lwjgl.opengl.GL11;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import java.awt.*;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.*;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
+
+
+
 
 @SideOnly(Side.CLIENT)
 public class RenderPingInWorld {
@@ -25,8 +42,12 @@ public class RenderPingInWorld {
   private static final Tessellator tes = Tessellator.getInstance();
   private static final WorldRenderer wr = tes.getWorldRenderer();
   private static Entity e = mc.getRenderViewEntity();
+
+  private static int PING_TIMEOUT_MS = 15 * 1000;
+  private static int PING_FADE_MS = PING_TIMEOUT_MS / 2;
   private static double oldy = 0;
   private static double newy = 0;
+
 
   public static void renderBlock(float pticks) {
     try {
@@ -69,8 +90,8 @@ public class RenderPingInWorld {
               int lifetime = (int) (System.currentTimeMillis() - pingtime);
 
               int lifefade = lifetime / 2;
-              int lifefadeback = 15000 / 2 - lifefade;
-              int trpy = (lifetime > 15000) ? 0 : min(255, (lifefade > 255) ? lifefadeback : lifefade);
+              int lifefadeback = PING_FADE_MS - lifefade;
+              int trpy = (lifetime > PING_TIMEOUT_MS) ? 0 : min(255, (lifefade > 255) ? lifefadeback : lifefade);
 
               if (dist2d < 6) trpy = trpy / 2;
 
