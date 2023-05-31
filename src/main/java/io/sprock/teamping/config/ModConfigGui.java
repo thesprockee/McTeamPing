@@ -1,11 +1,11 @@
 package io.sprock.teamping.config;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
-import static io.sprock.teamping.TeamPing.MOD_TITLE;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.sprock.teamping.Version;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigCategory;
@@ -44,7 +44,7 @@ public class ModConfigGui extends GuiConfig {
 				return GuiConfig.getAbridgedConfigPath(config.toString());
 			}
 		}
-		return MOD_TITLE;
+		return Version.getVersion();
 	}
 
 	@Override

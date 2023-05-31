@@ -1,7 +1,6 @@
 package io.sprock.teamping;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,16 +16,16 @@ import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = TeamPing.MOD_ID, name = TeamPing.MOD_NAME, version = TeamPing.VERSION, clientSideOnly = true, guiFactory = "io.sprock.teamping.config.ModGuiFactory", acceptedMinecraftVersions = "[1.8.9]")
+@Mod(modid = TeamPing.MOD_ID, name = TeamPing.MOD_NAME, clientSideOnly = true, guiFactory = "io.sprock.teamping.config.ModGuiFactory", acceptedMinecraftVersions = "[1.8.9]")
 public class TeamPing {
 
 	public static final String MOD_ID = "teamping";
 	public static final String MOD_NAME = "TeamPing";
-	public static final String VERSION = "@VERSION@";
-	public static final String MOD_TITLE = "babsld's TeamPing v" + (VERSION);
+
 	public static Logger LOGGER;
 	public static final String PING_HERE = "x";
 	public static final String PING_NOTICE = "n";
@@ -42,14 +41,7 @@ public class TeamPing {
 
 	public static List<JsonObject> pings = new ArrayList<>();
 
-	public static String GitVersion = VERSION;
-	public static int playerCount = 0;
-	public static boolean hidetext = false;
-	public static boolean isInParty = false;
-	public static ArrayList<String> partyPlayers = new ArrayList<>();
-	public static OutputStream outputStream;
 	private final EventListener eventListener;
-
 
 	public TeamPing() throws IOException {
 		KeyBindings.initialize();
@@ -57,12 +49,22 @@ public class TeamPing {
 
 	}
 
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent e) {
-		LOGGER = e.getModLog();
-		LOGGER.info(MOD_TITLE);
+	public static String getTitle() {
+		return "babsld's TeamPing v" + Version.getVersion();
+	}
 
-		Config.preInit(e);
+	@EventHandler
+	public void preInit(FMLPreInitializationEvent event) {
+		LOGGER = event.getModLog();
+
+		Version.init(event.getVersionProperties());
+		ModMetadata metadata = event.getModMetadata();
+		metadata.version = Version.getVersion();
+
+		LOGGER.info(getTitle());
+
+		Config.preInit(event);
+
 	}
 
 	@EventHandler

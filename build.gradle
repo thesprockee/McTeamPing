@@ -92,6 +92,37 @@ task versionGen {
 	}
 }
 
+task createProperties {
+
+    def details = versionDetails()
+	def versionProperties = "$buildDir/resources/version.txt"
+
+	doLast {
+
+        new File("$buildDir/resources/main/version.properties").withWriter { w ->
+            Properties p = new Properties()
+            p['version'] = project.version.toString()
+            p['gitLastTag'] = details.lastTag
+            p['gitCommitDistance'] = details.commitDistance.toString()
+            p['gitHash'] = details.gitHash.toString()
+            p['gitHashFull'] = details.gitHashFull.toString() // full 40-character Git commit hash
+            p['gitBranchName'] = details.branchName // is null if the repository in detached HEAD mode
+            p['gitIsCleanTag'] = details.isCleanTag.toString()
+            p.store w, null
+        }
+        // copy needed, otherwise the bean VersionController can't load
+        // the file at startup when running complete-app tests.
+        copy {
+            from "$buildDir/resources/main/version.properties"
+            into "bin/main/"
+        }
+    }
+}
+classes {
+    dependsOn createProperties
+}
+
+
 shadowJar {
     archiveFileName = jar.archiveFileName
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
