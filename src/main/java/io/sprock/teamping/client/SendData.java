@@ -29,8 +29,13 @@ public class SendData {
       } else {
         bp = getMouseOverExtended(distance).getBlockPos();
       }
-      ArrayList<String> components = new ArrayList<String>();
 
+      ArrayList<String> components = new ArrayList<String>();
+      String messagePrefix = Config.getPingMessagePrefix();
+
+      if (!messagePrefix.isEmpty()) {
+          components.add(messagePrefix + " ");
+      }
       components.add("p");
 
       components.add(String.join("/",
