@@ -80,7 +80,7 @@ public final class Config {
 		boolean needsReload = false;
 
 		String pingMessagePrefix = config.getString("pingMessagePrefix", CATEGORY_CLIENT,
-				defaultValues.pingMessagePrefix, "ping message prefix");
+				defaultValues.pingMessagePrefix, "Prefix ping messages with...");
 		values.pingMessagePrefix = pingMessagePrefix;
 
 		final boolean configChanged = config.hasChanged();

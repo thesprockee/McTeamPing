@@ -1,7 +1,7 @@
 package io.sprock.teamping.config;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
-import static io.sprock.teamping.TeamPing.VERSION;
+import static io.sprock.teamping.TeamPing.MOD_TITLE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +44,7 @@ public class ModConfigGui extends GuiConfig {
 				return GuiConfig.getAbridgedConfigPath(config.toString());
 			}
 		}
-		return "babsld's TeamPing v" + (VERSION);
+		return MOD_TITLE;
 	}
 
 	@Override

@@ -26,6 +26,7 @@ public class TeamPing {
 	public static final String MOD_ID = "teamping";
 	public static final String MOD_NAME = "TeamPing";
 	public static final String VERSION = "@VERSION@";
+	public static final String MOD_TITLE = "babsld's TeamPing v" + (VERSION);
 	public static Logger LOGGER;
 	public static final String PING_HERE = "x";
 	public static final String PING_NOTICE = "n";
@@ -49,6 +50,7 @@ public class TeamPing {
 	public static OutputStream outputStream;
 	private final EventListener eventListener;
 
+
 	public TeamPing() throws IOException {
 		KeyBindings.initialize();
 		this.eventListener = new EventListener();
@@ -58,7 +60,8 @@ public class TeamPing {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent e) {
 		LOGGER = e.getModLog();
-		LOGGER.info("babsld's " + MOD_NAME + "v" + VERSION);
+		LOGGER.info(MOD_TITLE);
+
 		Config.preInit(e);
 	}
 
