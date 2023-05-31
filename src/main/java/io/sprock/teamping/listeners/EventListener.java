@@ -1,6 +1,6 @@
 package io.sprock.teamping.listeners;
 
-import static io.sprock.teamping.TeamPing.LOGGER;
+import static io.sprock.teamping.TeamPing.MOD_ID;
 import static io.sprock.teamping.TeamPing.pings;
 import static io.sprock.teamping.client.PingSelector.cX;
 import static io.sprock.teamping.client.PingSelector.cY;

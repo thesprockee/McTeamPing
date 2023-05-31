@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.JsonObject;
@@ -19,6 +18,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(modid = TeamPing.MOD_ID, name = TeamPing.MOD_NAME, version = TeamPing.VERSION, clientSideOnly = true)
 public class TeamPing {
@@ -26,7 +26,7 @@ public class TeamPing {
 	public static final String MOD_ID = "teamping";
 	public static final String MOD_NAME = "TeamPing";
 	public static final String VERSION = "@VERSION@";
-	public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
+	public static Logger LOGGER;
 	public static final String PING_HERE = "x";
 	public static final String PING_NOTICE = "n";
 	public static final String PING_QUESTION = "q";
@@ -57,7 +57,14 @@ public class TeamPing {
 	}
 
 	@EventHandler
+	public void preInit(FMLPreInitializationEvent e) {
+		LOGGER = e.getModLog();
+		LOGGER.info("babsld's " + MOD_NAME + "v" + VERSION);
+	}
+
+	@EventHandler
 	public void init(FMLInitializationEvent ev) {
+
 		MinecraftForge.EVENT_BUS.register(eventListener);
 		ClientCommandHandler.instance.registerCommand(new TeamPingCommand());
 	}
