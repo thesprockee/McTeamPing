@@ -14,7 +14,7 @@ public class KeyBindings {
 	public static KeyBinding[] keyBindings;
 
 	public static void initialize() {
-		keyBindings = new KeyBinding[3];
+		keyBindings = new KeyBinding[2];
 		keyBindings[0] = new KeyBinding("key.aqupd.menu", Keyboard.KEY_F, "key.aqupd.categories.teamping");
 		keyBindings[1] = new KeyBinding("key.aqupd.reset", Keyboard.KEY_U, "key.aqupd.categories.teamping");
 		for (KeyBinding keyBinding : keyBindings)
