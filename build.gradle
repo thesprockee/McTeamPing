@@ -25,7 +25,7 @@ apply plugin: 'java'
 version gitVersion()
 
 group = "io.sprock"
-archivesBaseName = "teamping"
+archivesBaseName = "babsld-TeamPing"
 String modid = "teamping"
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
