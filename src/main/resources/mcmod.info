@@ -1,7 +1,7 @@
 [
   {
     "modid": "teamping",
-    "name": "TeamPing",
+    "name": "babsld's TeamPing",
     "description": "Minecraft Mod providing waypoints via party chat.",
     "version": "${version}",
     "mcversion": "${mcversion}",
@@ -9,10 +9,9 @@
     "updateUrl": "",
     "authorList": [
       "babsld",
-      "sprockee",
-      "Aqua_tic(AqUpd)"
+      "sprockee"
     ],
-    "credits": "Aqua_tic(AqUpd), Clyred, nekoli",
+    "credits": "Original design by Aqua_tic(AqUpd)",
     "dependencies": [],
     "logoFile": "icon.png"
   }
