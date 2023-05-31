@@ -19,7 +19,6 @@ import static java.lang.Math.toDegrees;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -33,11 +32,12 @@ public class PingSelector {
   public static double cX = 0;
   public static double cY = 0;
   private static int currentid = -1;
+
   public static void render() {
     Minecraft mc = Minecraft.getMinecraft();
     Tessellator tes = Tessellator.getInstance();
     WorldRenderer wr = tes.getWorldRenderer();
-    FontRenderer fr = mc.fontRendererObj;
+
     try {
       ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
       double width = sr.getScaledWidth_double();
