@@ -15,7 +15,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import io.sprock.teamping.client.PartyGUI;
 import io.sprock.teamping.client.PingManager;
 import io.sprock.teamping.client.PingSelector;
 import io.sprock.teamping.config.Config;
@@ -32,15 +31,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EventListener {
-	public static boolean connectedtoserver = false;
+
 	private boolean clearpings = false;
 
-	public static boolean connecting = false;
+
 	public static boolean guimenu = false;
-	public static boolean stoppingmc = false;
+
 	public static float ticks;
 	public static Integer[] playsound = new Integer[3];
-	public static int conattempts = 0;
+
 	public static int timer = 0;
 
 	public static long openChatTime = 0;
@@ -110,7 +109,6 @@ public class EventListener {
 			clearpings = false;
 		}
 
-		if (keyBindings[2].isPressed()) Minecraft.getMinecraft().displayGuiScreen(new PartyGUI());
 	}
 
 	@SideOnly(Side.CLIENT)

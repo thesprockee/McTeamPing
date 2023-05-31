@@ -33,7 +33,7 @@ public class SendData {
       String messagePrefix = Config.getPingMessagePrefix();
 
       if (!messagePrefix.isEmpty()) {
-          components.add(messagePrefix + " ");
+    	  components.add(messagePrefix + " ");
       }
       components.add("p");
 
