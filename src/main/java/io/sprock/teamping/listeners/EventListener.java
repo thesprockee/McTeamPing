@@ -18,12 +18,14 @@ import com.google.gson.JsonPrimitive;
 import io.sprock.teamping.client.PartyGUI;
 import io.sprock.teamping.client.PingManager;
 import io.sprock.teamping.client.PingSelector;
+import io.sprock.teamping.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -53,7 +55,6 @@ public class EventListener {
 		ticks = event.renderTickTime;
 	}
 
-
 	private long lastjoineventusage = 0;
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
@@ -63,7 +64,6 @@ public class EventListener {
 			lastjoineventusage = System.currentTimeMillis();
 		}
 	}
-
 
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
@@ -121,14 +121,12 @@ public class EventListener {
 		}
 	}
 
-
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onChat(ClientChatReceivedEvent event) {
 		if (event.type == 0x2) {
 			return; // ignore actionbar messages
 		}
-		LOGGER.info("Received message: '" + event.message.getUnformattedText() + "'");
 
 		Matcher matcher = chatPingPattern.matcher(event.message.getUnformattedText().trim());
 
@@ -168,5 +166,16 @@ public class EventListener {
 			}
 
 		}
+	@SubscribeEvent
+	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
+		if (!MOD_ID.equals(eventArgs.modID)) {
+			return;
+		}
+
+		if (Config.syncAllConfig()) {
+			// when config is reloaded
+		}
 	}
+}
+
 

@@ -5,13 +5,13 @@ import static java.lang.Math.min;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.sprock.teamping.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
-
 
 public class SendData {
   public static long lastpingtime = 0;
@@ -21,7 +21,6 @@ public class SendData {
 
       int distance = min(Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16, 128);
       Entity e = getMouseOverExtended(distance).entityHit;
-
       BlockPos bp;
 
       if (e != null) {

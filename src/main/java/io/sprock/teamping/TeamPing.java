@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.gson.JsonObject;
 
 import io.sprock.teamping.commands.TeamPingCommand;
+import io.sprock.teamping.config.Config;
 import io.sprock.teamping.listeners.EventListener;
 import io.sprock.teamping.registrations.KeyBindings;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -19,7 +20,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = TeamPing.MOD_ID, name = TeamPing.MOD_NAME, version = TeamPing.VERSION, clientSideOnly = true)
+@Mod(modid = TeamPing.MOD_ID, name = TeamPing.MOD_NAME, version = TeamPing.VERSION, clientSideOnly = true, guiFactory = "io.sprock.teamping.config.ModGuiFactory", acceptedMinecraftVersions = "[1.8.9]")
 public class TeamPing {
 
 	public static final String MOD_ID = "teamping";
@@ -58,6 +59,7 @@ public class TeamPing {
 	public void preInit(FMLPreInitializationEvent e) {
 		LOGGER = e.getModLog();
 		LOGGER.info("babsld's " + MOD_NAME + "v" + VERSION);
+		Config.preInit(e);
 	}
 
 	@EventHandler
