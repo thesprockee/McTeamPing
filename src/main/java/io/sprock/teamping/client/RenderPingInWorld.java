@@ -44,7 +44,7 @@ public class RenderPingInWorld {
   private static Entity e = mc.getRenderViewEntity();
 
   private static int PING_TIMEOUT_MS = 15 * 1000;
-  private static int PING_FADE_MS = PING_TIMEOUT_MS / 2;
+  private static int PING_FADE_MS = PING_TIMEOUT_MS / 4;
   private static double oldy = 0;
   private static double newy = 0;
 
