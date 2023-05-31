@@ -12,7 +12,6 @@ import com.google.gson.JsonObject;
 import io.sprock.teamping.commands.TeamPingCommand;
 import io.sprock.teamping.listeners.EventListener;
 import io.sprock.teamping.registrations.KeyBindings;
-import io.sprock.teamping.util.Configuration;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -52,8 +51,7 @@ public class TeamPing {
 	public TeamPing() throws IOException {
 		KeyBindings.initialize();
 		this.eventListener = new EventListener();
-		Configuration.loadOptions();
-		LOGGER.info(MOD_NAME + " v" + VERSION);
+
 	}
 
 	@EventHandler
