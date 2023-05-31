@@ -41,7 +41,7 @@ public class RenderPingInWorld {
 	private static Entity e = mc.getRenderViewEntity();
 
 	private static int PING_TIMEOUT_MS = 15 * 1000;
-	private static int PING_FADE_MS = PING_TIMEOUT_MS / 4;
+	private static int PING_FADE_MS = PING_TIMEOUT_MS / 1;
 	private static double oldy = 0;
 	private static double newy = 0;
 
@@ -67,7 +67,7 @@ public class RenderPingInWorld {
 					String type = data.get("type").getAsString();
 					boolean isEntity = data.get("isEntity").getAsBoolean();
 
-					// Color color = new Color(jcolor.get(0).getAsInt(), jcolor.get(1).getAsInt(),
+
 					// jcolor.get(2).getAsInt());
 					Color color = new Color(255, 255, 255);
 					BlockPos bp = new BlockPos(jblock.get(0).getAsInt(), jblock.get(1).getAsInt(),
@@ -95,6 +95,9 @@ public class RenderPingInWorld {
 						if (dist2d < 6)
 							trpy = trpy / 2;
 
+						if (dist2d < 3)
+							trpy = 0;
+
 						drawOutline(aabb, color.getRed(), color.getGreen(), color.getBlue(), (int) (trpy / 1.5),
 								isEntity);
 						drawBox(aabb, color.getRed(), color.getGreen(), color.getBlue(), trpy / 6, isEntity);
@@ -104,37 +107,38 @@ public class RenderPingInWorld {
 						float bz = jblock.get(2).getAsFloat() + 0.5F;
 
 						wr.setTranslation(iPX + bx, iPY, iPZ + bz);
+						// colors from https://colorswall.com/palette/59048
 						switch (type) {
 						case "x":
-							renderPing(trpy, 0, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks,
+							renderPing(trpy, 0, bx, by, bz, 249, 255, 254, pticks,
 									bp);
 							break;
 						case "n":
-							renderPing(trpy, 1, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks,
+							renderPing(trpy, 1, bx, by, bz, 254, 216, 61, pticks,
 									bp);
 							break;
 						case "q":
-							renderPing(trpy, 2, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks,
+							renderPing(trpy, 2, bx, by, bz, 249, 128, 29, pticks,
 									bp);
 							break;
 						case "N":
-							renderPing(trpy, 3, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks,
+							renderPing(trpy, 3, bx, by, bz, 157, 157, 151, pticks,
 									bp);
 							break;
 						case "Y":
-							renderPing(trpy, 4, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks,
+							renderPing(trpy, 4, bx, by, bz, 128, 199, 31, pticks,
 									bp);
 							break;
 						case "d":
-							renderPing(trpy, 5, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks,
+							renderPing(trpy, 5, bx, by, bz, 60, 68, 170, pticks,
 									bp);
 							break;
 						case "a":
-							renderPing(trpy, 6, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks,
+							renderPing(trpy, 6, bx, by, bz, 176, 46, 38, pticks,
 									bp);
 							break;
 						case "m":
-							renderPing(trpy, 7, bx, by, bz, color.getRed(), color.getGreen(), color.getBlue(), pticks,
+							renderPing(trpy, 7, bx, by, bz, 199, 78, 189, pticks,
 									bp);
 							break;
 						}
