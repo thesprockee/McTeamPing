@@ -1,12 +1,10 @@
 package io.sprock.teamping.client;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
-import static io.sprock.teamping.TeamPing.partyName;
 import static io.sprock.teamping.TeamPing.pingIds;
 import static io.sprock.teamping.client.SendData.pingBlock;
 import static io.sprock.teamping.listeners.EventListener.guimenu;
 import static io.sprock.teamping.listeners.EventListener.timer;
-import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
 import static java.lang.Math.PI;
 import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
@@ -18,7 +16,6 @@ import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 import static java.lang.Math.toDegrees;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
@@ -47,14 +44,6 @@ public class PingSelector {
       double height = sr.getScaledHeight_double();
       double linestart = 10;
       double linewidth = linestart + Math.min(timer, 4)*4;
-
-      String s1 = "You need to join a party first!";
-      String s2 = "Use \"" + Keyboard.getKeyName(keyBindings[2].getKeyCode()) + "\" in order to open party menu";
-
-      if(partyName.equals("Your party id") || partyName.length() < 3) {
-        fr.drawString(s1, (float) (width / 2) - (fr.getStringWidth(s1) / 2), (float) height / 2 - 64, 16711680, true);
-        fr.drawString(s2, (float) (width / 2) - (fr.getStringWidth(s2) / 2), (float) height / 2 + 64, 16711680, true);
-      }
 
       GlStateManager.enableBlend();
       GlStateManager.disableTexture2D();

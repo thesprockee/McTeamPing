@@ -1,7 +1,6 @@
 package io.sprock.teamping.commands;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.command.CommandBase;
@@ -54,19 +53,8 @@ public class TeamPingCommand extends CommandBase {
 
 	@Override
 	public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
-		System.out.println(Arrays.toString(args));
-		List<String> tabcomp = new ArrayList<>();
-		if (args.length == 1) {
-			tabcomp.add("join");
-			tabcomp.add("list");
-			tabcomp.add("kick");
-			tabcomp.add("ban");
-			tabcomp.add("promote");
-			tabcomp.add("leave");
-			tabcomp.add("status");
-			tabcomp.add("genInvText");
-		}
 
+		List<String> tabcomp = new ArrayList<>();
 		return tabcomp;
 	}
 }

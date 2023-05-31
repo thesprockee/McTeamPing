@@ -40,7 +40,7 @@ public class TeamPing {
 			PING_DEFEND, PING_ATTACK, PING_MINE };
 
 	public static List<JsonObject> pings = new ArrayList<>();
-	public static String partyName = "default";
+
 	public static String GitVersion = VERSION;
 	public static int playerCount = 0;
 	public static boolean hidetext = false;
