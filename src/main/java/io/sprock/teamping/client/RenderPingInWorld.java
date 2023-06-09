@@ -95,7 +95,7 @@ public class RenderPingInWorld {
 						if (dist2d < 6)
 							trpy = trpy / 2;
 
-						if (dist2d < 3)
+						if (dist < 3)
 							trpy = 0;
 
 						drawOutline(aabb, color.getRed(), color.getGreen(), color.getBlue(), (int) (trpy / 1.5),
