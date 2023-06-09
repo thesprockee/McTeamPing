@@ -3,6 +3,7 @@ buildscript {
         maven { url 'https://jitpack.io' }
         maven { url 'https://repo.spongepowered.org/maven' }
         maven { url 'https://maven.minecraftforge.net/' }
+        maven { url = uri("https://plugins.gradle.org/m2/") }
     }
 
     dependencies {
@@ -91,19 +92,26 @@ task versionGen {
 """
 	}
 }
+tasks.register('ensureDirectory') {
+    // Store target directory into a variable to avoid project reference in the configuration cache
+    def directory = file("images")
 
+    doLast {
+        Files.createDirectories(directory.toPath())
+    }
+}
 task createProperties {
 
     def details = versionDetails()
 	def versionProperties = "$buildDir/resources/version.txt"
-
+    def versionFile = new File("$buildDir/resources/version.properties")
+	def versionDirectory = "$buildDir/resources"
 	doLast {
-
-        new File("$buildDir/resources/main/version.properties").withWriter { w ->
+		mkdir versionDirectory
+		versionFile.withWriter { w ->
             Properties p = new Properties()
             p['version'] = project.version.toString()
             p['gitLastTag'] = details.lastTag
-            p['gitCommitDistance'] = details.commitDistance.toString()
             p['gitHash'] = details.gitHash.toString()
             p['gitHashFull'] = details.gitHashFull.toString() // full 40-character Git commit hash
             p['gitBranchName'] = details.branchName // is null if the repository in detached HEAD mode
@@ -113,7 +121,7 @@ task createProperties {
         // copy needed, otherwise the bean VersionController can't load
         // the file at startup when running complete-app tests.
         copy {
-            from "$buildDir/resources/main/version.properties"
+            from "$buildDir/resources/version.properties"
             into "bin/main/"
         }
     }

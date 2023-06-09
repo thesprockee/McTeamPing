@@ -17,7 +17,6 @@ public class Version
     }
 
     public static String getVersion() {
-    	return version;
+    	return (version != null) ? version : "DEVELOPMENT";
     }
-
 }
