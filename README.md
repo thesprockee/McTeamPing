@@ -13,6 +13,10 @@ Provides in-world location markers (pings) to all party members via party chat.
 
 ## Development Environment
 
+### Requirements
+
+* Java 1.8
+
 ```sh
 ./gradlew.bat setupDecompWorkspace
 ```
