@@ -33,6 +33,11 @@ public final class Config {
 		return values.pingMessagePrefix;
 	}
 
+	public static Boolean isPingSFXEnabled() {
+		return values.enablePingSFX;
+	}
+
+
 	@Nullable
 	public static Configuration getConfig() {
 		return config;
@@ -74,19 +79,27 @@ public final class Config {
 	}
 
 	private static boolean syncConfig() {
+
 		if (config == null) {
 			return false;
 		}
+
 		boolean needsReload = false;
 
 		String pingMessagePrefix = config.getString("pingMessagePrefix", CATEGORY_CLIENT,
 				defaultValues.pingMessagePrefix, "Prefix ping messages with...");
 		values.pingMessagePrefix = pingMessagePrefix;
 
+		boolean enablePingSFX = config.getBoolean("enablePingSFX", CATEGORY_CLIENT,
+				defaultValues.enablePingSFX, "Enable Ping SFX ");
+		values.enablePingSFX = enablePingSFX;
+
 		final boolean configChanged = config.hasChanged();
+
 		if (configChanged) {
 			config.save();
 		}
+
 		return needsReload;
 	}
 

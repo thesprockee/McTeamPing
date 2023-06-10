@@ -34,11 +34,11 @@ public class EventListener {
 
 	private boolean clearpings = false;
 
-
 	public static boolean guimenu = false;
 
 	public static float ticks;
-	public static Integer[] playsound = new Integer[3];
+
+	public static Integer[] sfxPosition = new Integer[3];
 
 	public static int timer = 0;
 
@@ -80,11 +80,14 @@ public class EventListener {
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onClientTickEvent(TickEvent.ClientTickEvent event) {
-		if (playsound[0] != null && playsound[1] != null && playsound[2] != null) {
-			Minecraft.getMinecraft().theWorld.playSound(playsound[0], playsound[1], playsound[2],"minecraft:fireworks.blast_far", 0.5F, 1F, false);
-			playsound[0] = null;
-			playsound[1] = null;
-			playsound[2] = null;
+
+		if (Config.isPingSFXEnabled() &&  sfxPosition[0] != null && sfxPosition[1] != null && sfxPosition[2] != null) {
+
+			Minecraft.getMinecraft().theWorld.playSound(sfxPosition[0], sfxPosition[1], sfxPosition[2], "minecraft:fireworks.blast_far", 0.5F, 1F, false);
+
+			sfxPosition[0] = null;
+			sfxPosition[1] = null;
+			sfxPosition[2] = null;
 		}
 
 		Iterator<JsonObject> pingsIter = pings.iterator();
@@ -157,9 +160,9 @@ public class EventListener {
 			blockps[1] = Math.min(2, Math.max(-2, playerpos[1] - data.get("bp").getAsJsonArray().get(1).getAsInt()));
 			blockps[2] = Math.min(2, Math.max(-2, playerpos[2] - data.get("bp").getAsJsonArray().get(2).getAsInt()));
 
-			playsound[0] = playerpos[0] - blockps[0];
-			playsound[1] = playerpos[1] - blockps[1];
-			playsound[2] = playerpos[2] - blockps[2];
+			sfxPosition[0] = playerpos[0] - blockps[0];
+			sfxPosition[1] = playerpos[1] - blockps[1];
+			sfxPosition[2] = playerpos[2] - blockps[2];
 
 			}
 
