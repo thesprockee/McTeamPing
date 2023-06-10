@@ -55,6 +55,7 @@ public class EventListener {
 	}
 
 	private long lastjoineventusage = 0;
+
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void someEvent(EntityJoinWorldEvent event) {
@@ -81,9 +82,10 @@ public class EventListener {
 	@SubscribeEvent
 	public void onClientTickEvent(TickEvent.ClientTickEvent event) {
 
-		if (Config.isPingSFXEnabled() &&  sfxPosition[0] != null && sfxPosition[1] != null && sfxPosition[2] != null) {
+		if (Config.isPingSFXEnabled() && sfxPosition[0] != null && sfxPosition[1] != null && sfxPosition[2] != null) {
 
-			Minecraft.getMinecraft().theWorld.playSound(sfxPosition[0], sfxPosition[1], sfxPosition[2], "minecraft:fireworks.blast_far", 0.5F, 1F, false);
+			Minecraft.getMinecraft().theWorld.playSound(sfxPosition[0], sfxPosition[1], sfxPosition[2],
+					"minecraft:fireworks.blast_far", 0.5F, 1F, false);
 
 			sfxPosition[0] = null;
 			sfxPosition[1] = null;
@@ -99,7 +101,8 @@ public class EventListener {
 			}
 		}
 
-		if (guimenu && timer < 15) timer++;
+		if (guimenu && timer < 15)
+			timer++;
 		else if (!guimenu && timer > 0) {
 			timer--;
 			cX = 0;
@@ -134,18 +137,18 @@ public class EventListener {
 		if (matcher.find()) {
 			event.setCanceled(true);
 			JsonObject data = new JsonObject();
-	        data.add("datatype", new JsonPrimitive("ping"));
+			data.add("datatype", new JsonPrimitive("ping"));
 
-	        data.add("isEntity", new JsonPrimitive(false));
+			data.add("isEntity", new JsonPrimitive(false));
 
-	        JsonArray blockpos = new JsonArray();
-	        blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(1))));
-	        blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(2))));
-	        blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(3))));
+			JsonArray blockpos = new JsonArray();
+			blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(1))));
+			blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(2))));
+			blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(3))));
 
-	        data.add("bp", blockpos);
-	        data.add("type", new JsonPrimitive(matcher.group(4)));
-	        data.add("uuid", new JsonPrimitive(UUID.randomUUID().toString().substring(0, 6)));
+			data.add("bp", blockpos);
+			data.add("type", new JsonPrimitive(matcher.group(4)));
+			data.add("uuid", new JsonPrimitive(UUID.randomUUID().toString().substring(0, 6)));
 			data.add("time", new JsonPrimitive(System.currentTimeMillis()));
 
 			pings.add(data);
@@ -164,9 +167,10 @@ public class EventListener {
 			sfxPosition[1] = playerpos[1] - blockps[1];
 			sfxPosition[2] = playerpos[2] - blockps[2];
 
-			}
-
 		}
+
+	}
+
 	@SubscribeEvent
 	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
 		if (!MOD_ID.equals(eventArgs.modID)) {
@@ -178,5 +182,3 @@ public class EventListener {
 		}
 	}
 }
-
-
