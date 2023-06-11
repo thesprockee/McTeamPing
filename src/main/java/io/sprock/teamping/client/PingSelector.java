@@ -1,10 +1,5 @@
 package io.sprock.teamping.client;
 
-import static io.sprock.teamping.TeamPing.MOD_ID;
-import static io.sprock.teamping.TeamPing.pingIds;
-import static io.sprock.teamping.client.SendData.pingBlock;
-import static io.sprock.teamping.listeners.EventListener.guimenu;
-import static io.sprock.teamping.listeners.EventListener.timer;
 import static java.lang.Math.PI;
 import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
@@ -15,6 +10,10 @@ import static java.lang.Math.pow;
 import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 import static java.lang.Math.toDegrees;
+
+import static io.sprock.teamping.TeamPing.MOD_ID;
+import static io.sprock.teamping.TeamPing.pingIds;
+import static io.sprock.teamping.client.SendData.pingBlock;
 
 import org.lwjgl.opengl.GL11;
 
@@ -28,43 +27,83 @@ import net.minecraft.util.ResourceLocation;
 
 @SuppressWarnings("IntegerDivisionInFloatingPointContext")
 public class PingSelector {
-	private static boolean menu;
-	public static double cX = 0;
-	public static double cY = 0;
-	private static int currentid = -1;
+
+	private static final int minimumSelectDistance = 4;
+
+	private static boolean isActive = false;
+
+	private static final int transitionDuration = 15;
+
+	private static final int defaultMarkerType = 0;
+	private static int transitionTickCounter = 0;
+	private static double transitionProgress = 0.0;
+
+	public static double cursorPosX = 0;
+	public static double cursorPosY = 0;
+	private static int previousMarkerTypeSelection = -1;
+	private static int selectedMarkerType = -1;
+
+	public static boolean isActive() {
+		return isActive;
+	}
+
+	public static void setActive(boolean isActive) {
+		PingSelector.isActive = isActive;
+	}
 
 	public static void render() {
+
+		if (PingSelector.isActive) {
+			if (transitionTickCounter < transitionDuration) {
+				transitionTickCounter++;
+			}
+		} else if (transitionTickCounter > 0) {
+			transitionTickCounter--;
+		} else {
+			cursorPosX = 0;
+			cursorPosY = 0;
+			return; // skip rendering
+		}
+
+		transitionProgress = transitionTickCounter / transitionDuration;
+
 		Minecraft mc = Minecraft.getMinecraft();
 		Tessellator tes = Tessellator.getInstance();
 		WorldRenderer wr = tes.getWorldRenderer();
 
 		try {
-			ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-			double width = sr.getScaledWidth_double();
-			double height = sr.getScaledHeight_double();
-			double linestart = 10;
-			double linewidth = linestart + Math.min(timer, 4) * 4;
+			ScaledResolution sr = new ScaledResolution(mc);
+			double screenWidth = sr.getScaledWidth_double();
+			double screenHeight = sr.getScaledHeight_double();
+
+			double spokeOffset = 10;
+			double spokeLength = 16;
+
+			double spokeEnd = spokeOffset + spokeLength * transitionProgress;
 
 			GlStateManager.enableBlend();
 			GlStateManager.disableTexture2D();
 			GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-			wr.setTranslation(width / 2, height / 2, 0);
+			wr.setTranslation(screenWidth / 2, screenHeight / 2, 0);
+
+			// spoke lines
+
 			wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
 			GL11.glLineWidth(2);
-			wr.pos(0, linestart, 0.0D).color(64, 64, 64, 127).endVertex(); // Bottom
-			wr.pos(0, linewidth, 0.0D).color(64, 64, 64, 127).endVertex(); // Bottom
-			wr.pos(linestart, 0, 0.0D).color(64, 64, 64, 127).endVertex(); // Right
-			wr.pos(linewidth, 0, 0.0D).color(64, 64, 64, 127).endVertex(); // Right
-			wr.pos(0, -linestart, 0.0D).color(64, 64, 64, 127).endVertex(); // Top
-			wr.pos(0, -linewidth, 0.0D).color(64, 64, 64, 127).endVertex(); // Top
-			wr.pos(-linestart, 0, 0.0D).color(64, 64, 64, 127).endVertex(); // Left
-			wr.pos(-linewidth, 0, 0.0D).color(64, 64, 64, 127).endVertex(); // Left
+			wr.pos(0, spokeOffset, 0.0D).color(64, 64, 64, 127).endVertex(); // Bottom
+			wr.pos(0, spokeEnd, 0.0D).color(64, 64, 64, 127).endVertex(); // Bottom
+			wr.pos(spokeOffset, 0, 0.0D).color(64, 64, 64, 127).endVertex(); // Right
+			wr.pos(spokeEnd, 0, 0.0D).color(64, 64, 64, 127).endVertex(); // Right
+			wr.pos(0, -spokeOffset, 0.0D).color(64, 64, 64, 127).endVertex(); // Top
+			wr.pos(0, -spokeEnd, 0.0D).color(64, 64, 64, 127).endVertex(); // Top
+			wr.pos(-spokeOffset, 0, 0.0D).color(64, 64, 64, 127).endVertex(); // Left
+			wr.pos(-spokeEnd, 0, 0.0D).color(64, 64, 64, 127).endVertex(); // Left
 			tes.draw();
 
-			double startx = cos(PI / 4) * linestart;
-			double starty = sin(PI / 4) * linestart;
-			double endx = cos(PI / 4) * linewidth - 0.35;
-			double endy = sin(PI / 4) * linewidth - 0.35;
+			double startx = cos(PI / 4) * spokeOffset;
+			double starty = sin(PI / 4) * spokeOffset;
+			double endx = cos(PI / 4) * spokeEnd - 0.35;
+			double endy = sin(PI / 4) * spokeEnd - 0.35;
 
 			wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
 			GL11.glLineWidth(3);
@@ -99,112 +138,140 @@ public class PingSelector {
 			tes.draw();
 
 			double sensitivity = pow(mc.gameSettings.mouseSensitivity / 4 + 0.2, 3) * 8.0F;
-			int pingid = -1;
 
-			if (guimenu || menu) {
-				menu = true;
-				cX = cX + mc.mouseHelper.deltaX * sensitivity;
-				cY = cY - mc.mouseHelper.deltaY * sensitivity;
-				cX = min(cX, 40);
-				cX = max(cX, -40);
-				cY = min(cY, 40);
-				cY = max(cY, -40);
-				double angle = toDegrees((atan2(-cX, cY) + PI));
-				double dist = sqrt(pow(cX, 2) + pow(cY, 2));
-				if (dist > 10) {
-					pingid = (int) floor((angle - 22.5) / 45) + 1;
-					if (pingid == 8)
-						pingid = 0;
-					if (mc.gameSettings.keyBindAttack.isKeyDown() || !guimenu)
-						pingBlock(pingIds[pingid]);
-					if (!guimenu)
-						menu = false;
+			if (transitionProgress == 1.0) {
+				cursorPosX = cursorPosX + mc.mouseHelper.deltaX * sensitivity;
+				cursorPosY = cursorPosY - mc.mouseHelper.deltaY * sensitivity;
+				cursorPosX = min(cursorPosX, 40);
+				cursorPosX = max(cursorPosX, -40);
+				cursorPosY = min(cursorPosY, 40);
+				cursorPosY = max(cursorPosY, -40);
+				double angle = toDegrees((atan2(-cursorPosX, cursorPosY) + PI));
+				double cursorDistanceFromCenter = sqrt(pow(cursorPosX, 2) + pow(cursorPosY, 2));
+
+				if (cursorDistanceFromCenter > minimumSelectDistance) {
+					selectedMarkerType = (int) floor((angle - 22.5) / 45) + 1;
+
+					if (selectedMarkerType == 8)
+						selectedMarkerType = defaultMarkerType;
 				} else {
-					if (mc.gameSettings.keyBindAttack.isKeyDown() || !guimenu)
-						pingBlock(pingIds[0]);
+					selectedMarkerType = defaultMarkerType;
 				}
+
 				wr.begin(GL11.GL_POINTS, DefaultVertexFormats.POSITION_COLOR);
 				GL11.glPointSize(4);
-				wr.pos(cX, cY, 0).color(25, 25, 25, 127).endVertex();
+				wr.pos(cursorPosX, cursorPosY, 0).color(25, 25, 25, 127).endVertex();
 				tes.draw();
-			}
 
-			if (currentid != pingid) {
-				currentid = pingid;
-				Minecraft.getMinecraft().thePlayer.playSound("minecraft:random.wood_click", 0.1F, 2);
-			}
+				if (previousMarkerTypeSelection != selectedMarkerType) {
+					Minecraft.getMinecraft().thePlayer.playSound("minecraft:random.wood_click", 0.1F, 2);
+					previousMarkerTypeSelection = selectedMarkerType;
+				}
 
-			double mos = (sqrt(pow(16, 2) + pow(16, 2))) / 2;
-			double midx = cos(PI / 4) * (linewidth + 8);
-			double midy = sin(PI / 4) * (linewidth + 8);
-			if (timer >= 5) {
-				int alpha = 6 * (timer - 5);
+				double mos = (sqrt(pow(16, 2) + pow(16, 2))) / 2;
+				double midx = cos(PI / 4) * (spokeEnd + 8);
+				double midy = sin(PI / 4) * (spokeEnd + 8);
+
+				int alpha = (int) Math.round(128 * transitionProgress);
+
 				wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-				wr.pos(linewidth, -8, 0.0D).color(32, 32, 32, (pingid == 2) ? alpha + 128 : alpha).endVertex(); // Right
-																												// 2
-				wr.pos(linewidth, 8, 0.0D).color(32, 32, 32, (pingid == 2) ? alpha + 128 : alpha).endVertex(); // Right
-																												// 2
-				wr.pos(linewidth + 16, 8, 0.0D).color(32, 32, 32, (pingid == 2) ? alpha + 128 : alpha).endVertex(); // Right
-																													// 2
-				wr.pos(linewidth + 16, -8, 0.0D).color(32, 32, 32, (pingid == 2) ? alpha + 128 : alpha).endVertex(); // Right
-																														// 2
-				wr.pos(-8, -linewidth - 16, 0.0D).color(32, 32, 32, (pingid == 0) ? alpha + 128 : alpha).endVertex(); // Top
-																														// 0
-				wr.pos(-8, -linewidth, 0.0D).color(32, 32, 32, (pingid == 0) ? alpha + 128 : alpha).endVertex(); // Top
-																													// 0
-				wr.pos(8, -linewidth, 0.0D).color(32, 32, 32, (pingid == 0) ? alpha + 128 : alpha).endVertex(); // Top 0
-				wr.pos(8, -linewidth - 16, 0.0D).color(32, 32, 32, (pingid == 0) ? alpha + 128 : alpha).endVertex(); // Top
-																														// 0
-				wr.pos(-linewidth - 16, -8, 0.0D).color(32, 32, 32, (pingid == 6) ? alpha + 128 : alpha).endVertex(); // Left
-																														// 6
-				wr.pos(-linewidth - 16, 8, 0.0D).color(32, 32, 32, (pingid == 6) ? alpha + 128 : alpha).endVertex(); // Left
-																														// 6
-				wr.pos(-linewidth, 8, 0.0D).color(32, 32, 32, (pingid == 6) ? alpha + 128 : alpha).endVertex(); // Left
-																												// 6
-				wr.pos(-linewidth, -8, 0.0D).color(32, 32, 32, (pingid == 6) ? alpha + 128 : alpha).endVertex(); // Left
-																													// 6
-				wr.pos(-8, linewidth, 0.0D).color(32, 32, 32, (pingid == 4) ? alpha + 128 : alpha).endVertex(); // Bottom
-																												// 4
-				wr.pos(-8, linewidth + 16, 0.0D).color(32, 32, 32, (pingid == 4) ? alpha + 128 : alpha).endVertex(); // Bottom
-																														// 4
-				wr.pos(8, linewidth + 16, 0.0D).color(32, 32, 32, (pingid == 4) ? alpha + 128 : alpha).endVertex(); // Bottom
-																													// 4
-				wr.pos(8, linewidth, 0.0D).color(32, 32, 32, (pingid == 4) ? alpha + 128 : alpha).endVertex(); // Bottom
-																												// 4
+				wr.pos(spokeEnd, -8, 0.0D).color(32, 32, 32, (selectedMarkerType == 2) ? alpha + 128 : alpha)
+						.endVertex(); // Right
+				// 2
+				wr.pos(spokeEnd, 8, 0.0D).color(32, 32, 32, (selectedMarkerType == 2) ? alpha + 128 : alpha)
+						.endVertex(); // Right
+				// 2
+				wr.pos(spokeEnd + 16, 8, 0.0D).color(32, 32, 32, (selectedMarkerType == 2) ? alpha + 128 : alpha)
+						.endVertex(); // Right
+				// 2
+				wr.pos(spokeEnd + 16, -8, 0.0D).color(32, 32, 32, (selectedMarkerType == 2) ? alpha + 128 : alpha)
+						.endVertex(); // Right
+				// 2
+				wr.pos(-8, -spokeEnd - 16, 0.0D).color(32, 32, 32, (selectedMarkerType == 0) ? alpha + 128 : alpha)
+						.endVertex(); // Top
+				// 0
+				wr.pos(-8, -spokeEnd, 0.0D).color(32, 32, 32, (selectedMarkerType == 0) ? alpha + 128 : alpha)
+						.endVertex(); // Top
+				// 0
+				wr.pos(8, -spokeEnd, 0.0D).color(32, 32, 32, (selectedMarkerType == 0) ? alpha + 128 : alpha)
+						.endVertex(); // Top 0
+				wr.pos(8, -spokeEnd - 16, 0.0D).color(32, 32, 32, (selectedMarkerType == 0) ? alpha + 128 : alpha)
+						.endVertex(); // Top
+				// 0
+				wr.pos(-spokeEnd - 16, -8, 0.0D).color(32, 32, 32, (selectedMarkerType == 6) ? alpha + 128 : alpha)
+						.endVertex(); // Left
+				// 6
+				wr.pos(-spokeEnd - 16, 8, 0.0D).color(32, 32, 32, (selectedMarkerType == 6) ? alpha + 128 : alpha)
+						.endVertex(); // Left
+				// 6
+				wr.pos(-spokeEnd, 8, 0.0D).color(32, 32, 32, (selectedMarkerType == 6) ? alpha + 128 : alpha)
+						.endVertex(); // Left
+				// 6
+				wr.pos(-spokeEnd, -8, 0.0D).color(32, 32, 32, (selectedMarkerType == 6) ? alpha + 128 : alpha)
+						.endVertex(); // Left
+				// 6
+				wr.pos(-8, spokeEnd, 0.0D).color(32, 32, 32, (selectedMarkerType == 4) ? alpha + 128 : alpha)
+						.endVertex(); // Bottom
+				// 4
+				wr.pos(-8, spokeEnd + 16, 0.0D).color(32, 32, 32, (selectedMarkerType == 4) ? alpha + 128 : alpha)
+						.endVertex(); // Bottom
+				// 4
+				wr.pos(8, spokeEnd + 16, 0.0D).color(32, 32, 32, (selectedMarkerType == 4) ? alpha + 128 : alpha)
+						.endVertex(); // Bottom
+				// 4
+				wr.pos(8, spokeEnd, 0.0D).color(32, 32, 32, (selectedMarkerType == 4) ? alpha + 128 : alpha)
+						.endVertex(); // Bottom
+				// 4
 				midx = midx - 0.25;
 				midy = midy - 0.25;
-				wr.pos(midx - mos, midy, 0).color(32, 32, 32, (pingid == 3) ? alpha + 128 : alpha).endVertex(); // Bottom-Right
-																												// 4
-				wr.pos(midx, midy + mos, 0).color(32, 32, 32, (pingid == 3) ? alpha + 128 : alpha).endVertex(); // Bottom-Right
-																												// 4
-				wr.pos(midx + mos, midy, 0).color(32, 32, 32, (pingid == 3) ? alpha + 128 : alpha).endVertex(); // Bottom-Right
-																												// 4
-				wr.pos(midx, midy - mos, 0).color(32, 32, 32, (pingid == 3) ? alpha + 128 : alpha).endVertex(); // Bottom-Right
-																												// 4
-				wr.pos(-midx - mos, midy, 0).color(32, 32, 32, (pingid == 5) ? alpha + 128 : alpha).endVertex(); // Bottom-Left
-																													// 6
-				wr.pos(-midx, midy + mos, 0).color(32, 32, 32, (pingid == 5) ? alpha + 128 : alpha).endVertex(); // Bottom-Left
-																													// 6
-				wr.pos(-midx + mos, midy, 0).color(32, 32, 32, (pingid == 5) ? alpha + 128 : alpha).endVertex(); // Bottom-Left
-																													// 6
-				wr.pos(-midx, midy - mos, 0).color(32, 32, 32, (pingid == 5) ? alpha + 128 : alpha).endVertex(); // Bottom-Left
-																													// 6
-				wr.pos(-midx - mos, -midy, 0).color(32, 32, 32, (pingid == 7) ? alpha + 128 : alpha).endVertex(); // Top-Left
-																													// 8
-				wr.pos(-midx, -midy + mos, 0).color(32, 32, 32, (pingid == 7) ? alpha + 128 : alpha).endVertex(); // Top-Left
-																													// 8
-				wr.pos(-midx + mos, -midy, 0).color(32, 32, 32, (pingid == 7) ? alpha + 128 : alpha).endVertex(); // Top-Left
-																													// 8
-				wr.pos(-midx, -midy - mos, 0).color(32, 32, 32, (pingid == 7) ? alpha + 128 : alpha).endVertex(); // Top-Left
-																													// 8
-				wr.pos(midx - mos, -midy, 0).color(32, 32, 32, (pingid == 1) ? alpha + 128 : alpha).endVertex(); // Top-Right
-																													// 2
-				wr.pos(midx, -midy + mos, 0).color(32, 32, 32, (pingid == 1) ? alpha + 128 : alpha).endVertex(); // Top-Right
-																													// 2
-				wr.pos(midx + mos, -midy, 0).color(32, 32, 32, (pingid == 1) ? alpha + 128 : alpha).endVertex(); // Top-Right
-																													// 2
-				wr.pos(midx, -midy - mos, 0).color(32, 32, 32, (pingid == 1) ? alpha + 128 : alpha).endVertex(); // Top-Right
-																													// 2
+				wr.pos(midx - mos, midy, 0).color(32, 32, 32, (selectedMarkerType == 3) ? alpha + 128 : alpha)
+						.endVertex(); // Bottom-Right
+				// 4
+				wr.pos(midx, midy + mos, 0).color(32, 32, 32, (selectedMarkerType == 3) ? alpha + 128 : alpha)
+						.endVertex(); // Bottom-Right
+				// 4
+				wr.pos(midx + mos, midy, 0).color(32, 32, 32, (selectedMarkerType == 3) ? alpha + 128 : alpha)
+						.endVertex(); // Bottom-Right
+				// 4
+				wr.pos(midx, midy - mos, 0).color(32, 32, 32, (selectedMarkerType == 3) ? alpha + 128 : alpha)
+						.endVertex(); // Bottom-Right
+				// 4
+				wr.pos(-midx - mos, midy, 0).color(32, 32, 32, (selectedMarkerType == 5) ? alpha + 128 : alpha)
+						.endVertex(); // Bottom-Left
+				// 6
+				wr.pos(-midx, midy + mos, 0).color(32, 32, 32, (selectedMarkerType == 5) ? alpha + 128 : alpha)
+						.endVertex(); // Bottom-Left
+				// 6
+				wr.pos(-midx + mos, midy, 0).color(32, 32, 32, (selectedMarkerType == 5) ? alpha + 128 : alpha)
+						.endVertex(); // Bottom-Left
+				// 6
+				wr.pos(-midx, midy - mos, 0).color(32, 32, 32, (selectedMarkerType == 5) ? alpha + 128 : alpha)
+						.endVertex(); // Bottom-Left
+				// 6
+				wr.pos(-midx - mos, -midy, 0).color(32, 32, 32, (selectedMarkerType == 7) ? alpha + 128 : alpha)
+						.endVertex(); // Top-Left
+				// 8
+				wr.pos(-midx, -midy + mos, 0).color(32, 32, 32, (selectedMarkerType == 7) ? alpha + 128 : alpha)
+						.endVertex(); // Top-Left
+				// 8
+				wr.pos(-midx + mos, -midy, 0).color(32, 32, 32, (selectedMarkerType == 7) ? alpha + 128 : alpha)
+						.endVertex(); // Top-Left
+				// 8
+				wr.pos(-midx, -midy - mos, 0).color(32, 32, 32, (selectedMarkerType == 7) ? alpha + 128 : alpha)
+						.endVertex(); // Top-Left
+				// 8
+				wr.pos(midx - mos, -midy, 0).color(32, 32, 32, (selectedMarkerType == 1) ? alpha + 128 : alpha)
+						.endVertex(); // Top-Right
+				// 2
+				wr.pos(midx, -midy + mos, 0).color(32, 32, 32, (selectedMarkerType == 1) ? alpha + 128 : alpha)
+						.endVertex(); // Top-Right
+				// 2
+				wr.pos(midx + mos, -midy, 0).color(32, 32, 32, (selectedMarkerType == 1) ? alpha + 128 : alpha)
+						.endVertex(); // Top-Right
+				// 2
+				wr.pos(midx, -midy - mos, 0).color(32, 32, 32, (selectedMarkerType == 1) ? alpha + 128 : alpha)
+						.endVertex(); // Top-Right
+				// 2
 				tes.draw();
 
 				double minU;
@@ -215,103 +282,135 @@ public class PingSelector {
 
 				minU = 0.125 * 0;
 				maxU = minU + 0.125;
-				wr.pos(-8, -linewidth - 16, 0.0D).tex(minU, 0).color(8, 202, 209, min(255, alpha * 5)).endVertex();// Top
-																													// 0
-				wr.pos(-8, -linewidth, 0.0D).tex(minU, 1).color(8, 202, 209, min(255, alpha * 5)).endVertex(); // Top 0
-				wr.pos(8, -linewidth, 0.0D).tex(maxU, 1).color(8, 202, 209, min(255, alpha * 5)).endVertex(); // Top 0
-				wr.pos(8, -linewidth - 16, 0.0D).tex(maxU, 0).color(8, 202, 209, min(255, alpha * 5)).endVertex(); // Top
-																													// 0
+				wr.pos(-8, -spokeEnd - 16, 0.0D).tex(minU, 0).color(8, 202, 209, min(255, alpha * transitionDuration))
+						.endVertex();// Top
+				// 0
+				wr.pos(-8, -spokeEnd, 0.0D).tex(minU, 1).color(8, 202, 209, min(255, alpha * transitionDuration))
+						.endVertex(); // Top 0
+				wr.pos(8, -spokeEnd, 0.0D).tex(maxU, 1).color(8, 202, 209, min(255, alpha * transitionDuration))
+						.endVertex(); // Top 0
+				wr.pos(8, -spokeEnd - 16, 0.0D).tex(maxU, 0).color(8, 202, 209, min(255, alpha * transitionDuration))
+						.endVertex(); // Top
+				// 0
 				tes.draw();
 
 				wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 				minU = 0.125 * 1;
 				maxU = minU + 0.125;
-				wr.pos(midx - 8, -midy - 8, 0).tex(minU, 0).color(199, 128, 232, min(255, alpha * 5)).endVertex(); // Top-Right
-																													// 1
-				wr.pos(midx - 8, -midy + 8, 0).tex(minU, 1).color(199, 128, 232, min(255, alpha * 5)).endVertex(); // Top-Right
-																													// 1
-				wr.pos(midx + 8, -midy + 8, 0).tex(maxU, 1).color(199, 128, 232, min(255, alpha * 5)).endVertex(); // Top-Right
-																													// 1
-				wr.pos(midx + 8, -midy - 8, 0).tex(maxU, 0).color(199, 128, 232, min(255, alpha * 5)).endVertex(); // Top-Right
-																													// 1
+				wr.pos(midx - 8, -midy - 8, 0).tex(minU, 0).color(199, 128, 232, min(255, alpha * transitionDuration))
+						.endVertex(); // Top-Right
+				// 1
+				wr.pos(midx - 8, -midy + 8, 0).tex(minU, 1).color(199, 128, 232, min(255, alpha * transitionDuration))
+						.endVertex(); // Top-Right
+				// 1
+				wr.pos(midx + 8, -midy + 8, 0).tex(maxU, 1).color(199, 128, 232, min(255, alpha * transitionDuration))
+						.endVertex(); // Top-Right
+				// 1
+				wr.pos(midx + 8, -midy - 8, 0).tex(maxU, 0).color(199, 128, 232, min(255, alpha * transitionDuration))
+						.endVertex(); // Top-Right
+				// 1
 				tes.draw();
 
 				wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 				minU = 0.125 * 2;
 				maxU = minU + 0.125;
-				wr.pos(linewidth, -8, 0.0D).tex(minU, 0).color(255, 180, 128, min(255, alpha * 5)).endVertex(); // Right
-																												// 2
-				wr.pos(linewidth, 8, 0.0D).tex(minU, 1).color(255, 180, 128, min(255, alpha * 5)).endVertex(); // Right
-																												// 2
-				wr.pos(linewidth + 16, 8, 0.0D).tex(maxU, 1).color(255, 180, 128, min(255, alpha * 5)).endVertex(); // Right
-																													// 2
-				wr.pos(linewidth + 16, -8, 0.0D).tex(maxU, 0).color(255, 180, 128, min(255, alpha * 5)).endVertex(); // Right
-																														// 2
+				wr.pos(spokeEnd, -8, 0.0D).tex(minU, 0).color(255, 180, 128, min(255, alpha * transitionDuration))
+						.endVertex(); // Right
+				// 2
+				wr.pos(spokeEnd, 8, 0.0D).tex(minU, 1).color(255, 180, 128, min(255, alpha * transitionDuration))
+						.endVertex(); // Right
+				// 2
+				wr.pos(spokeEnd + 16, 8, 0.0D).tex(maxU, 1).color(255, 180, 128, min(255, alpha * transitionDuration))
+						.endVertex(); // Right
+				// 2
+				wr.pos(spokeEnd + 16, -8, 0.0D).tex(maxU, 0).color(255, 180, 128, min(255, alpha * transitionDuration))
+						.endVertex(); // Right
+				// 2
 				tes.draw();
 
 				wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 				minU = 0.125 * 3;
 				maxU = minU + 0.125;
-				wr.pos(midx - 8, midy - 8, 0).tex(minU, 0).color(89, 173, 246, min(255, alpha * 5)).endVertex(); // Bottom-Right
-																													// 3
-				wr.pos(midx - 8, midy + 8, 0).tex(minU, 1).color(89, 173, 246, min(255, alpha * 5)).endVertex(); // Bottom-Right
-																													// 3
-				wr.pos(midx + 8, midy + 8, 0).tex(maxU, 1).color(89, 173, 246, min(255, alpha * 5)).endVertex(); // Bottom-Right
-																													// 3
-				wr.pos(midx + 8, midy - 8, 0).tex(maxU, 0).color(89, 173, 246, min(255, alpha * 5)).endVertex(); // Bottom-Right
-																													// 3
+				wr.pos(midx - 8, midy - 8, 0).tex(minU, 0).color(89, 173, 246, min(255, alpha * transitionDuration))
+						.endVertex(); // Bottom-Right
+				// 3
+				wr.pos(midx - 8, midy + 8, 0).tex(minU, 1).color(89, 173, 246, min(255, alpha * transitionDuration))
+						.endVertex(); // Bottom-Right
+				// 3
+				wr.pos(midx + 8, midy + 8, 0).tex(maxU, 1).color(89, 173, 246, min(255, alpha * transitionDuration))
+						.endVertex(); // Bottom-Right
+				// 3
+				wr.pos(midx + 8, midy - 8, 0).tex(maxU, 0).color(89, 173, 246, min(255, alpha * transitionDuration))
+						.endVertex(); // Bottom-Right
+				// 3
 				tes.draw();
 
 				wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 				minU = 0.125 * 4;
 				maxU = minU + 0.125;
-				wr.pos(-8, linewidth, 0.0D).tex(minU, 0).color(255, 105, 97, min(255, alpha * 5)).endVertex(); // Bottom
-																												// 4
-				wr.pos(-8, linewidth + 16, 0.0D).tex(minU, 1).color(255, 105, 97, min(255, alpha * 5)).endVertex();// Bottom
-																													// 4
-				wr.pos(8, linewidth + 16, 0.0D).tex(maxU, 1).color(255, 105, 97, min(255, alpha * 5)).endVertex(); // Bottom
-																													// 4
-				wr.pos(8, linewidth, 0.0D).tex(maxU, 0).color(255, 105, 97, min(255, alpha * 5)).endVertex(); // Bottom
-																												// 4
+				wr.pos(-8, spokeEnd, 0.0D).tex(minU, 0).color(255, 105, 97, min(255, alpha * transitionDuration))
+						.endVertex(); // Bottom
+				// 4
+				wr.pos(-8, spokeEnd + 16, 0.0D).tex(minU, 1).color(255, 105, 97, min(255, alpha * transitionDuration))
+						.endVertex();// Bottom
+				// 4
+				wr.pos(8, spokeEnd + 16, 0.0D).tex(maxU, 1).color(255, 105, 97, min(255, alpha * transitionDuration))
+						.endVertex(); // Bottom
+				// 4
+				wr.pos(8, spokeEnd, 0.0D).tex(maxU, 0).color(255, 105, 97, min(255, alpha * transitionDuration))
+						.endVertex(); // Bottom
+				// 4
 				tes.draw();
 
 				wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-				minU = 0.125 * 5;
+				minU = 0.125 * transitionDuration;
 				maxU = minU + 0.125;
-				wr.pos(-midx - 8, midy - 8, 0).tex(minU, 0).color(66, 214, 164, min(255, alpha * 5)).endVertex(); // Bottom-Left
-																													// 5
-				wr.pos(-midx - 8, midy + 8, 0).tex(minU, 1).color(66, 214, 164, min(255, alpha * 5)).endVertex(); // Bottom-Left
-																													// 5
-				wr.pos(-midx + 8, midy + 8, 0).tex(maxU, 1).color(66, 214, 164, min(255, alpha * 5)).endVertex(); // Bottom-Left
-																													// 5
-				wr.pos(-midx + 8, midy - 8, 0).tex(maxU, 0).color(66, 214, 164, min(255, alpha * 5)).endVertex(); // Bottom-Left
-																													// 5
+				wr.pos(-midx - 8, midy - 8, 0).tex(minU, 0).color(66, 214, 164, min(255, alpha * transitionDuration))
+						.endVertex(); // Bottom-Left
+				// 5
+				wr.pos(-midx - 8, midy + 8, 0).tex(minU, 1).color(66, 214, 164, min(255, alpha * transitionDuration))
+						.endVertex(); // Bottom-Left
+				// 5
+				wr.pos(-midx + 8, midy + 8, 0).tex(maxU, 1).color(66, 214, 164, min(255, alpha * transitionDuration))
+						.endVertex(); // Bottom-Left
+				// 5
+				wr.pos(-midx + 8, midy - 8, 0).tex(maxU, 0).color(66, 214, 164, min(255, alpha * transitionDuration))
+						.endVertex(); // Bottom-Left
+				// 5
 				tes.draw();
 
 				wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 				minU = 0.125 * 6;
 				maxU = minU + 0.125;
-				wr.pos(-linewidth - 16, -8, 0.0D).tex(minU, 0).color(157, 148, 255, min(255, alpha * 5)).endVertex();// Right
-																														// 6
-				wr.pos(-linewidth - 16, 8, 0.0D).tex(minU, 1).color(157, 148, 255, min(255, alpha * 5)).endVertex(); // Right
-																														// 6
-				wr.pos(-linewidth, 8, 0.0D).tex(maxU, 1).color(157, 148, 255, min(255, alpha * 5)).endVertex(); // Right
-																												// 6
-				wr.pos(-linewidth, -8, 0.0D).tex(maxU, 0).color(157, 148, 255, min(255, alpha * 5)).endVertex(); // Right
-																													// 6
+				wr.pos(-spokeEnd - 16, -8, 0.0D).tex(minU, 0).color(157, 148, 255, min(255, alpha * transitionDuration))
+						.endVertex();// Right
+				// 6
+				wr.pos(-spokeEnd - 16, 8, 0.0D).tex(minU, 1).color(157, 148, 255, min(255, alpha * transitionDuration))
+						.endVertex(); // Right
+				// 6
+				wr.pos(-spokeEnd, 8, 0.0D).tex(maxU, 1).color(157, 148, 255, min(255, alpha * transitionDuration))
+						.endVertex(); // Right
+				// 6
+				wr.pos(-spokeEnd, -8, 0.0D).tex(maxU, 0).color(157, 148, 255, min(255, alpha * transitionDuration))
+						.endVertex(); // Right
+				// 6
 				tes.draw();
 
 				wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 				minU = 0.125 * 7;
 				maxU = minU + 0.125;
-				wr.pos(-midx - 8, -midy - 8, 0).tex(minU, 0).color(248, 243, 141, min(255, alpha * 5)).endVertex(); // Top-Left
-																													// 7
-				wr.pos(-midx - 8, -midy + 8, 0).tex(minU, 1).color(248, 243, 141, min(255, alpha * 5)).endVertex(); // Top-Left
-																													// 7
-				wr.pos(-midx + 8, -midy + 8, 0).tex(maxU, 1).color(248, 243, 141, min(255, alpha * 5)).endVertex(); // Top-Left
-																													// 7
-				wr.pos(-midx + 8, -midy - 8, 0).tex(maxU, 0).color(248, 243, 141, min(255, alpha * 5)).endVertex(); // Top-Left
-																													// 7
+				wr.pos(-midx - 8, -midy - 8, 0).tex(minU, 0).color(248, 243, 141, min(255, alpha * transitionDuration))
+						.endVertex(); // Top-Left
+				// 7
+				wr.pos(-midx - 8, -midy + 8, 0).tex(minU, 1).color(248, 243, 141, min(255, alpha * transitionDuration))
+						.endVertex(); // Top-Left
+				// 7
+				wr.pos(-midx + 8, -midy + 8, 0).tex(maxU, 1).color(248, 243, 141, min(255, alpha * transitionDuration))
+						.endVertex(); // Top-Left
+				// 7
+				wr.pos(-midx + 8, -midy - 8, 0).tex(maxU, 0).color(248, 243, 141, min(255, alpha * transitionDuration))
+						.endVertex(); // Top-Left
+				// 7
 				tes.draw();
 
 				GlStateManager.disableTexture2D();
@@ -328,4 +427,9 @@ public class PingSelector {
 			GlStateManager.disableBlend();
 		}
 	}
+
+	public static void triggerSelection() {
+		pingBlock(pingIds[selectedMarkerType]);
+	}
+
 }

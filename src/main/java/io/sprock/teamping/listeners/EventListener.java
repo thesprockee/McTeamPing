@@ -2,8 +2,6 @@ package io.sprock.teamping.listeners;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
 import static io.sprock.teamping.TeamPing.pings;
-import static io.sprock.teamping.client.PingSelector.cX;
-import static io.sprock.teamping.client.PingSelector.cY;
 import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
 
 import java.util.Iterator;
@@ -34,13 +32,11 @@ public class EventListener {
 
 	private boolean clearpings = false;
 
-	public static boolean guimenu = false;
-
 	public static float ticks;
 
 	public static Integer[] sfxPosition = new Integer[3];
 
-	public static int timer = 0;
+	private static final Minecraft minecraft = Minecraft.getMinecraft();
 
 	public static long openChatTime = 0;
 	public static boolean openChat = false;
@@ -101,15 +97,16 @@ public class EventListener {
 			}
 		}
 
-		if (guimenu && timer < 15)
-			timer++;
-		else if (!guimenu && timer > 0) {
-			timer--;
-			cX = 0;
-			cY = 0;
+		if (PingSelector.isActive()) {
+
+			if (!keyBindings[0].isKeyDown() || minecraft.gameSettings.keyBindAttack.isKeyDown()) {
+				PingSelector.triggerSelection();
+				PingSelector.setActive(false);
+			}
+		} else if (keyBindings[0].isKeyDown()) {
+			PingSelector.setActive(true);
 		}
 
-		guimenu = keyBindings[0].isKeyDown();
 		if (keyBindings[1].isPressed() || clearpings) {
 			PingManager.clear();
 			clearpings = false;
@@ -120,9 +117,8 @@ public class EventListener {
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void onGuiRenderEvent(RenderGameOverlayEvent.Pre event) {
-		if (event.type == RenderGameOverlayEvent.ElementType.BOSSHEALTH && (guimenu || timer > 0)) {
+		if (event.type == RenderGameOverlayEvent.ElementType.BOSSHEALTH)
 			PingSelector.render();
-		}
 	}
 
 	@SideOnly(Side.CLIENT)
