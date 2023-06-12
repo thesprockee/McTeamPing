@@ -2,9 +2,10 @@ package io.sprock.teamping.listeners;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
 import static io.sprock.teamping.TeamPing.pings;
+import static io.sprock.teamping.client.SendData.getSonarId;
 import static io.sprock.teamping.client.SendData.pingBlockUnderCursor;
-import static io.sprock.teamping.client.SendData.pingCoordinates;
 import static io.sprock.teamping.client.SendData.sendSonar;
+import static io.sprock.teamping.client.SendData.sendSonarReply;
 import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
 import static io.sprock.teamping.util.UtilMethods.distanceTo2D;
 
@@ -38,8 +39,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EventListener {
 
-	private boolean clearpings = false;
-
 	public static float ticks;
 
 	public static Integer[] sfxPosition = new Integer[3];
@@ -49,7 +48,7 @@ public class EventListener {
 	public static long openChatTime = 0;
 	public static boolean openChat = false;
 	public static String openChatString = "";
-	private static String commandRegex = "([ps]):([-0-9]{1,8})/([-0-9]{1,8})/([-0-9]{1,8}):([A-z0-9]{1,6})";
+	private static String commandRegex = "([psP]):([-0-9]{1,8})/([-0-9]{1,8})/([-0-9]{1,8}):([A-z0-9,]+)";
 	private static Pattern commandPattern = Pattern.compile(commandRegex);
 
 	@SideOnly(Side.CLIENT)
@@ -64,7 +63,6 @@ public class EventListener {
 	@SubscribeEvent
 	public void someEvent(EntityJoinWorldEvent event) {
 		if (event.entity instanceof EntityPlayerSP && (System.currentTimeMillis() - lastjoineventusage) > 250) {
-			clearpings = true;
 			lastjoineventusage = System.currentTimeMillis();
 		}
 	}
@@ -141,29 +139,40 @@ public class EventListener {
 		Matcher matcher = commandPattern.matcher(event.message.getUnformattedText().trim());
 
 		if (matcher.find()) {
-			event.setCanceled(true);
 
-			String prefix = matcher.group(1);
-			int x = Integer.parseInt(matcher.group(2));
-			int y = Integer.parseInt(matcher.group(3));
-			int z = Integer.parseInt(matcher.group(4));
-			String suffix = matcher.group(5);
+			try {
+				event.setCanceled(true);
 
-			switch (prefix) {
-			case "p":
-				markBlock(x, y, z, suffix.substring(0, 1));
-				break;
-			case "s":
+				String prefix = matcher.group(1);
+				int x = Integer.parseInt(matcher.group(2));
+				int y = Integer.parseInt(matcher.group(3));
+				int z = Integer.parseInt(matcher.group(4));
+				String suffix = matcher.group(5);
+				String[] parts = suffix.split(",");
 
-				Entity renderView = minecraft.getRenderViewEntity();
-				double range = (Config.getSonarRange() > 0.0) ? Config.getSonarRange() * 16 : 2048.0;
+				switch (prefix) {
+				case "p":
+					markBlock(x, y, z, suffix.substring(0, 1));
+					break;
+				case "s":
+					int range = Integer.parseInt(parts[0]);
+					String sourceId = parts[1];
+					int blockRange = (range > 0) ? range * 16 : 2048;
+					Entity renderView = minecraft.getRenderViewEntity();
+					if (sourceId != getSonarId() && distanceTo2D(renderView, new BlockPos(x, y, z)) <= blockRange) {
+						sendSonarReply(sourceId);
+					};
+					break;
+				case "P":
+					if (suffix == getSonarId()) {
+						markBlock(x, y, z, TeamPing.PING_NOTICE);
+					}
 
-				if (distanceTo2D(renderView, new BlockPos(x, y, z)) <= range) {
-					BlockPos playerPos = minecraft.thePlayer.getPosition();
-					pingCoordinates(playerPos.getX(), playerPos.getY(), playerPos.getZ(), TeamPing.PING_NOTICE);
-				};
-
-				break;
+					break;
+				}
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				TeamPing.LOGGER.warn("Could not process:" + e.getStackTrace());
 			}
 		}
 	}

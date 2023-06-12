@@ -16,7 +16,7 @@ import io.sprock.teamping.config.Config;
 
 public class SendData {
 	public static long lastpingtime = 0;
-	private static final Minecraft mc = Minecraft.getMinecraft();
+	private static final Minecraft minecraft = Minecraft.getMinecraft();
 
 	public static void pingBlockUnderCursor(String type) {
 		if ((System.currentTimeMillis() - lastpingtime) > 1000) {
@@ -36,15 +36,27 @@ public class SendData {
 		}
 	}
 
+	public static String getSonarId() {
+		return String.valueOf(Math.abs(minecraft.thePlayer.getPersistentID().hashCode()));
+	}
+
+	public static void sendSonar(int range) {
+		BlockPos bp = minecraft.thePlayer.getPosition();
+		ArrayList<String> suffix = new ArrayList<String>();
+		suffix.add(String.valueOf(range));
+		suffix.add(getSonarId());
+		sendCommand("s", bp.getX(), bp.getY(), bp.getZ(), String.join(",", suffix));
+	}
+
+	public static void sendSonarReply(String id) {
+		BlockPos playerPos = minecraft.thePlayer.getPosition();
+		sendCommand("P", playerPos.getX(), playerPos.getY(), playerPos.getZ(), id);
+	}
+
 	public static void pingCoordinates(int x, int y, int z, String type) {
 		sendCommand("p", x, y, z, type);
 
 		lastpingtime = System.currentTimeMillis();
-	}
-
-	public static void sendSonar(int range) {
-		BlockPos bp = Minecraft.getMinecraft().thePlayer.getPosition();
-		sendCommand("s", bp.getX(), bp.getY(), bp.getZ(), String.valueOf(Config.getSonarRange()));
 	}
 
 	public static void sendCommand(String prefix, int x, int y, int z, String suffix) {
@@ -61,7 +73,7 @@ public class SendData {
 
 		components.add(suffix);
 
-		mc.thePlayer.sendChatMessage(String.join(":", components));
+		minecraft.thePlayer.sendChatMessage(String.join(":", components));
 	}
 
 	private static MovingObjectPosition getMouseOverExtended(float dist) {
