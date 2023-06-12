@@ -103,9 +103,8 @@ tasks.register('ensureDirectory') {
 task createProperties {
 
     def details = versionDetails()
-	def versionProperties = "$buildDir/resources/version.txt"
-    def versionFile = new File("$buildDir/resources/version.properties")
-	def versionDirectory = "$buildDir/resources"
+    def versionFile = new File("$buildDir/resources/main/version.properties")
+	def versionDirectory = "$buildDir/resources/main"
 	doLast {
 		mkdir versionDirectory
 		versionFile.withWriter { w ->
@@ -121,7 +120,7 @@ task createProperties {
         // copy needed, otherwise the bean VersionController can't load
         // the file at startup when running complete-app tests.
         copy {
-            from "$buildDir/resources/version.properties"
+            from "$buildDir/resources/main/version.properties"
             into "bin/main/"
         }
     }
