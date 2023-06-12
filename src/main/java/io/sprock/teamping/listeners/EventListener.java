@@ -6,6 +6,7 @@ import static io.sprock.teamping.client.SendData.pingBlockUnderCursor;
 import static io.sprock.teamping.client.SendData.pingCoordinates;
 import static io.sprock.teamping.client.SendData.sendSonar;
 import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
+import static io.sprock.teamping.util.UtilMethods.distanceTo2D;
 
 import java.util.Iterator;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import com.google.gson.JsonPrimitive;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
 
 import io.sprock.teamping.TeamPing;
@@ -152,8 +154,15 @@ public class EventListener {
 				markBlock(x, y, z, suffix.substring(0, 1));
 				break;
 			case "s":
-				BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
-				pingCoordinates(playerPos.getX(), playerPos.getY(), playerPos.getZ(), TeamPing.PING_NOTICE);
+
+				Entity renderView = minecraft.getRenderViewEntity();
+				double range = (Config.getSonarRange() > 0.0) ? Config.getSonarRange() * 16 : 2048.0;
+
+				if (distanceTo2D(renderView, new BlockPos(x, y, z)) <= range) {
+					BlockPos playerPos = minecraft.thePlayer.getPosition();
+					pingCoordinates(playerPos.getX(), playerPos.getY(), playerPos.getZ(), TeamPing.PING_NOTICE);
+				};
+
 				break;
 			}
 		}

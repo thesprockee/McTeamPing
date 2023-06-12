@@ -95,8 +95,8 @@ public final class Config {
 		values.enablePingSFX = config.getBoolean("enablePingSFX", CATEGORY_CLIENT, defaultValues.enablePingSFX,
 				"Enable Ping SFX");
 
-		values.sonarRange = config.getInt("sonarRange", CATEGORY_CLIENT, defaultValues.sonarRange, 0, 16 * 16,
-				"Maximum distance for sonar [0 = unlimited]");
+		values.sonarRange = config.getInt("sonarChunkRange", CATEGORY_CLIENT, defaultValues.sonarRange, 0, 16,
+				"Maximum distance for sonar in chunks [0 = unlimited]");
 
 		values.useSelectWheel = config.getBoolean("useSelectWheel", CATEGORY_CLIENT, defaultValues.useSelectWheel,
 				"Use selection wheel for marker type");
