@@ -37,6 +37,9 @@ public final class Config {
 		return values.enablePingSFX;
 	}
 
+	public static int getSonarRange() {
+		return values.sonarRange;
+	}
 
 	@Nullable
 	public static Configuration getConfig() {
@@ -86,13 +89,17 @@ public final class Config {
 
 		boolean needsReload = false;
 
-		String pingMessagePrefix = config.getString("pingMessagePrefix", CATEGORY_CLIENT,
-				defaultValues.pingMessagePrefix, "Prefix ping messages with...");
-		values.pingMessagePrefix = pingMessagePrefix;
+		values.enablePingSFX = config.getBoolean("enablePingSFX", CATEGORY_CLIENT, defaultValues.enablePingSFX,
+				"Enable Ping SFX");
 
-		boolean enablePingSFX = config.getBoolean("enablePingSFX", CATEGORY_CLIENT,
-				defaultValues.enablePingSFX, "Enable Ping SFX ");
-		values.enablePingSFX = enablePingSFX;
+		values.sonarRange = config.getInt("sonarRange", CATEGORY_CLIENT, defaultValues.sonarRange, 0, 16 * 16,
+				"Maximum distance for sonar [0 = unlimited]");
+
+		values.useSelectWheel = config.getBoolean("useSelectWheel", CATEGORY_CLIENT, defaultValues.useSelectWheel,
+				"Use selection wheel for marker type");
+
+		values.pingMessagePrefix = config.getString("pingMessagePrefix", CATEGORY_CLIENT,
+				defaultValues.pingMessagePrefix, "Prefix ping messages with...");
 
 		final boolean configChanged = config.hasChanged();
 

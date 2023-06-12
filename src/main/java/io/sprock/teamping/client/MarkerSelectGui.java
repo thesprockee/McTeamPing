@@ -13,7 +13,7 @@ import static java.lang.Math.toDegrees;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
 import static io.sprock.teamping.TeamPing.pingIds;
-import static io.sprock.teamping.client.SendData.pingBlock;
+import static io.sprock.teamping.client.SendData.pingBlockUnderCursor;
 
 import org.lwjgl.opengl.GL11;
 
@@ -26,7 +26,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-public class PingSelector {
+public class MarkerSelectGui {
 
 	private static final int minimumSelectDistance = 4;
 
@@ -48,12 +48,12 @@ public class PingSelector {
 	}
 
 	public static void setActive(boolean isActive) {
-		PingSelector.isActive = isActive;
+		MarkerSelectGui.isActive = isActive;
 	}
 
 	public static void render() {
 
-		if (PingSelector.isActive) {
+		if (MarkerSelectGui.isActive) {
 			if (transitionTickCounter < transitionDuration) {
 				transitionTickCounter++;
 			}
@@ -429,7 +429,7 @@ public class PingSelector {
 	}
 
 	public static void triggerSelection() {
-		pingBlock(pingIds[selectedMarkerType]);
+		pingBlockUnderCursor(pingIds[selectedMarkerType]);
 	}
 
 }

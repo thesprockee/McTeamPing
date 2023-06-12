@@ -2,6 +2,8 @@ package io.sprock.teamping.listeners;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
 import static io.sprock.teamping.TeamPing.pings;
+import static io.sprock.teamping.client.SendData.pingCoordinates;
+import static io.sprock.teamping.client.SendData.sendSonar;
 import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
 
 import java.util.Iterator;
@@ -13,12 +15,15 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import io.sprock.teamping.client.PingManager;
-import io.sprock.teamping.client.PingSelector;
-import io.sprock.teamping.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.util.BlockPos;
+
+import io.sprock.teamping.TeamPing;
+import io.sprock.teamping.client.MarkerSelectGui;
+import io.sprock.teamping.config.Config;
+
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -41,8 +46,8 @@ public class EventListener {
 	public static long openChatTime = 0;
 	public static boolean openChat = false;
 	public static String openChatString = "";
-
-	private static Pattern chatPingPattern = Pattern.compile("p:([-0-9]{1,8})/([-0-9]{1,8})/([-0-9]{1,8}):([A-z])");
+	private static String commandRegex = "([ps]):([-0-9]{1,8})/([-0-9]{1,8})/([-0-9]{1,8}):([A-z0-9]{1,6})";
+	private static Pattern commandPattern = Pattern.compile(commandRegex);
 
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
@@ -97,19 +102,18 @@ public class EventListener {
 			}
 		}
 
-		if (PingSelector.isActive()) {
+		if (MarkerSelectGui.isActive()) {
 
 			if (!keyBindings[0].isKeyDown() || minecraft.gameSettings.keyBindAttack.isKeyDown()) {
-				PingSelector.triggerSelection();
-				PingSelector.setActive(false);
+				MarkerSelectGui.triggerSelection();
+				MarkerSelectGui.setActive(false);
 			}
 		} else if (keyBindings[0].isKeyDown()) {
-			PingSelector.setActive(true);
+			MarkerSelectGui.setActive(true);
 		}
 
-		if (keyBindings[1].isPressed() || clearpings) {
-			PingManager.clear();
-			clearpings = false;
+		if (keyBindings[1].isPressed()) {
+			sendSonar(Config.getSonarRange());
 		}
 
 	}
@@ -118,7 +122,7 @@ public class EventListener {
 	@SubscribeEvent
 	public void onGuiRenderEvent(RenderGameOverlayEvent.Pre event) {
 		if (event.type == RenderGameOverlayEvent.ElementType.BOSSHEALTH)
-			PingSelector.render();
+			MarkerSelectGui.render();
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -128,43 +132,59 @@ public class EventListener {
 			return; // ignore actionbar messages
 		}
 
-		Matcher matcher = chatPingPattern.matcher(event.message.getUnformattedText().trim());
+		Matcher matcher = commandPattern.matcher(event.message.getUnformattedText().trim());
 
 		if (matcher.find()) {
 			event.setCanceled(true);
-			JsonObject data = new JsonObject();
-			data.add("datatype", new JsonPrimitive("ping"));
 
-			data.add("isEntity", new JsonPrimitive(false));
+			String prefix = matcher.group(1);
+			int x = Integer.parseInt(matcher.group(2));
+			int y = Integer.parseInt(matcher.group(3));
+			int z = Integer.parseInt(matcher.group(4));
+			String suffix = matcher.group(5);
 
-			JsonArray blockpos = new JsonArray();
-			blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(1))));
-			blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(2))));
-			blockpos.add(new JsonPrimitive(Integer.parseInt(matcher.group(3))));
-
-			data.add("bp", blockpos);
-			data.add("type", new JsonPrimitive(matcher.group(4)));
-			data.add("uuid", new JsonPrimitive(UUID.randomUUID().toString().substring(0, 6)));
-			data.add("time", new JsonPrimitive(System.currentTimeMillis()));
-
-			pings.add(data);
-
-			Integer[] playerpos = new Integer[3];
-			playerpos[0] = Minecraft.getMinecraft().thePlayer.getPosition().getX();
-			playerpos[1] = Minecraft.getMinecraft().thePlayer.getPosition().getY();
-			playerpos[2] = Minecraft.getMinecraft().thePlayer.getPosition().getZ();
-
-			Integer[] blockps = new Integer[3];
-			blockps[0] = Math.min(2, Math.max(-2, playerpos[0] - data.get("bp").getAsJsonArray().get(0).getAsInt()));
-			blockps[1] = Math.min(2, Math.max(-2, playerpos[1] - data.get("bp").getAsJsonArray().get(1).getAsInt()));
-			blockps[2] = Math.min(2, Math.max(-2, playerpos[2] - data.get("bp").getAsJsonArray().get(2).getAsInt()));
-
-			sfxPosition[0] = playerpos[0] - blockps[0];
-			sfxPosition[1] = playerpos[1] - blockps[1];
-			sfxPosition[2] = playerpos[2] - blockps[2];
-
+			switch (prefix) {
+			case "p":
+				markBlock(x, y, z, suffix.substring(0, 1));
+				break;
+			case "s":
+				BlockPos playerPos = Minecraft.getMinecraft().thePlayer.getPosition();
+				pingCoordinates(playerPos.getX(), playerPos.getY(), playerPos.getZ(), TeamPing.PING_NOTICE);
+				break;
+			}
 		}
+	}
 
+	private void markBlock(int x, int y, int z, String type) {
+		JsonObject data = new JsonObject();
+		data.add("datatype", new JsonPrimitive("ping"));
+
+		data.add("isEntity", new JsonPrimitive(false));
+
+		JsonArray blockpos = new JsonArray();
+		blockpos.add(new JsonPrimitive(x));
+		blockpos.add(new JsonPrimitive(y));
+		blockpos.add(new JsonPrimitive(z));
+
+		data.add("bp", blockpos);
+		data.add("type", new JsonPrimitive(type));
+		data.add("uuid", new JsonPrimitive(UUID.randomUUID().toString().substring(0, 6)));
+		data.add("time", new JsonPrimitive(System.currentTimeMillis()));
+
+		pings.add(data);
+
+		BlockPos playerPos = minecraft.thePlayer.getPosition();
+		Integer[] playerpos = new Integer[] { playerPos.getX(), playerPos.getY(), playerPos.getZ() };
+
+		Integer[] blockps = new Integer[3];
+
+		blockps[0] = Math.min(2, Math.max(-2, playerpos[0] - x));
+		blockps[1] = Math.min(2, Math.max(-2, playerpos[1] - y));
+		blockps[2] = Math.min(2, Math.max(-2, playerpos[2] - z));
+
+		sfxPosition[0] = playerpos[0] - blockps[0];
+		sfxPosition[1] = playerpos[1] - blockps[1];
+		sfxPosition[2] = playerpos[2] - blockps[2];
 	}
 
 	@SubscribeEvent

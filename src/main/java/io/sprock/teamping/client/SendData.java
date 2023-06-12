@@ -5,7 +5,6 @@ import static java.lang.Math.min;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.sprock.teamping.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
@@ -13,10 +12,13 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 
+import io.sprock.teamping.config.Config;
+
 public class SendData {
   public static long lastpingtime = 0;
+  private static final Minecraft mc = Minecraft.getMinecraft();
 
-  public static void pingBlock(String type) {
+  public static void pingBlockUnderCursor(String type) {
     if ((System.currentTimeMillis() - lastpingtime) > 1000) {
 
       int distance = min(Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16, 128);
@@ -29,28 +31,44 @@ public class SendData {
         bp = getMouseOverExtended(distance).getBlockPos();
       }
 
-      ArrayList<String> components = new ArrayList<String>();
-      String messagePrefix = Config.getPingMessagePrefix();
+      pingCoordinates(bp.getX(), bp.getY(), bp.getZ(), type);
 
-      if (!messagePrefix.isEmpty()) {
-    	  components.add(messagePrefix + " ");
-      }
-      components.add("p");
-
-      components.add(String.join("/",
-    		  String.valueOf(bp.getX()),
-    		  String.valueOf(bp.getY()),
-    		  String.valueOf(bp.getZ())
-    		  ));
-
-      components.add(type);
-
-      Minecraft.getMinecraft().thePlayer.sendChatMessage(
-    		  String.join(":", components));
-
-      lastpingtime = System.currentTimeMillis();
     }
   }
+
+  public static void pingCoordinates(int x, int y, int z, String type) {
+      sendCommand("p", x, y, z, type);
+
+      lastpingtime = System.currentTimeMillis();
+  }
+
+  public static void sendSonar(int range) {
+	  BlockPos bp = Minecraft.getMinecraft().thePlayer.getPosition();
+	  sendCommand("s", bp.getX(), bp.getY(), bp.getZ(), String.valueOf(Config.getSonarRange()));
+  }
+
+  public static void sendCommand(String prefix, int x, int y, int z, String suffix) {
+	    ArrayList<String> components = new ArrayList<String>();
+	      String messagePrefix = Config.getPingMessagePrefix();
+
+	      if (!messagePrefix.isEmpty()) {
+	    	  components.add(messagePrefix + " ");
+	      }
+
+	      components.add(prefix);
+
+	      components.add(String.join("/",
+	    		  String.valueOf(x),
+	    		  String.valueOf(y),
+	    		  String.valueOf(z)
+	    		  ));
+
+	      components.add(suffix);
+
+	      mc.thePlayer.sendChatMessage(
+	    		  String.join(":", components));
+  }
+
 
   private static MovingObjectPosition getMouseOverExtended(float dist) {
     Minecraft mc = Minecraft.getMinecraft();
