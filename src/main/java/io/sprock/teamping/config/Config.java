@@ -29,17 +29,22 @@ public final class Config {
 
 	}
 
+	public static boolean shouldFilterDataMessages() {
+		return values.filterDataMessages;
+	}
+
 	public static String getPingMessagePrefix() {
-		return values.pingMessagePrefix;
+		return values.dataMessagePrefix;
 	}
 
 	public static Boolean isPingSFXEnabled() {
 		return values.enablePingSFX;
 	}
 
-	public static Boolean useSelectWheel() {
-		return values.useSelectWheel;
+	public static Boolean isSelectWheelEnabled() {
+		return values.enableMarkerSelectGUI;
 	}
+
 	public static int getSonarRange() {
 		return values.sonarRange;
 	}
@@ -92,17 +97,20 @@ public final class Config {
 
 		boolean needsReload = false;
 
+		values.filterDataMessages = config.getBoolean("filterDataMessages", CATEGORY_CLIENT,
+				defaultValues.filterDataMessages, "Do not display data messages in chat");
+
 		values.enablePingSFX = config.getBoolean("enablePingSFX", CATEGORY_CLIENT, defaultValues.enablePingSFX,
 				"Enable Ping SFX");
 
 		values.sonarRange = config.getInt("sonarChunkRange", CATEGORY_CLIENT, defaultValues.sonarRange, 0, 16,
-				"Maximum distance for sonar in chunks [0 = unlimited]");
+				"Sonar maximum range, in chunks (chunk = 16 blocks)");
 
-		values.useSelectWheel = config.getBoolean("useSelectWheel", CATEGORY_CLIENT, defaultValues.useSelectWheel,
-				"Use selection wheel for marker type");
+		values.enableMarkerSelectGUI = config.getBoolean("enableMarkerSelectGUI", CATEGORY_CLIENT,
+				defaultValues.enableMarkerSelectGUI, "Use on-screen GUI to select marker type");
 
-		values.pingMessagePrefix = config.getString("pingMessagePrefix", CATEGORY_CLIENT,
-				defaultValues.pingMessagePrefix, "Prefix ping messages with...");
+		values.dataMessagePrefix = config.getString("dataMessagePrefix", CATEGORY_CLIENT,
+				defaultValues.dataMessagePrefix, "Prefix data messages with...");
 
 		final boolean configChanged = config.hasChanged();
 

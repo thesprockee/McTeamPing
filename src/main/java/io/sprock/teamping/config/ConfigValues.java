@@ -2,9 +2,10 @@ package io.sprock.teamping.config;
 
 public class ConfigValues {
 
-	public String pingMessagePrefix = "/pchat";
+	public String dataMessagePrefix = "/pchat";
 	public boolean enablePingSFX = true;
-	public boolean useSelectWheel = false;
-	public int sonarRange = 0;
+	public boolean enableMarkerSelectGUI = true;
+	public int sonarRange = 16;
+	public boolean filterDataMessages = true;
 
 }

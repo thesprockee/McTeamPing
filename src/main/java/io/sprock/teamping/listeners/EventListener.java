@@ -103,7 +103,7 @@ public class EventListener {
 			}
 		}
 
-		if (Config.useSelectWheel()) {
+		if (Config.isSelectWheelEnabled()) {
 			if (MarkerSelectGui.isActive()) {
 
 				if (!keyBindings[0].isKeyDown() || minecraft.gameSettings.keyBindAttack.isKeyDown()) {
@@ -141,7 +141,7 @@ public class EventListener {
 		if (matcher.find()) {
 
 			try {
-				event.setCanceled(true);
+				event.setCanceled(Config.shouldFilterDataMessages());
 
 				String prefix = matcher.group(1);
 				int x = Integer.parseInt(matcher.group(2));
@@ -159,12 +159,13 @@ public class EventListener {
 					String sourceId = parts[1];
 					int blockRange = (range > 0) ? range * 16 : 2048;
 					Entity renderView = minecraft.getRenderViewEntity();
-					if (sourceId != getSonarId() && distanceTo2D(renderView, new BlockPos(x, y, z)) <= blockRange) {
+					if (!sourceId.equals(getSonarId()) && distanceTo2D(renderView, new BlockPos(x, y, z)) <= blockRange) {
 						sendSonarReply(sourceId);
-					};
+					}
+					;
 					break;
 				case "P":
-					if (suffix == getSonarId()) {
+					if (suffix.equals(getSonarId())) {
 						markBlock(x, y, z, TeamPing.PING_NOTICE);
 					}
 
