@@ -41,7 +41,7 @@ public class MarkerSelectGui {
 	public static double cursorPosX = 0;
 	public static double cursorPosY = 0;
 	private static int previousMarkerTypeSelection = -1;
-	private static int selectedMarkerType = -1;
+	private static int selectedMarkerType = 0;
 
 	public static boolean isActive() {
 		return isActive;

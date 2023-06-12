@@ -37,6 +37,9 @@ public final class Config {
 		return values.enablePingSFX;
 	}
 
+	public static Boolean useSelectWheel() {
+		return values.useSelectWheel;
+	}
 	public static int getSonarRange() {
 		return values.sonarRange;
 	}

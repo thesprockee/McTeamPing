@@ -2,6 +2,7 @@ package io.sprock.teamping.listeners;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
 import static io.sprock.teamping.TeamPing.pings;
+import static io.sprock.teamping.client.SendData.pingBlockUnderCursor;
 import static io.sprock.teamping.client.SendData.pingCoordinates;
 import static io.sprock.teamping.client.SendData.sendSonar;
 import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
@@ -102,16 +103,19 @@ public class EventListener {
 			}
 		}
 
-		if (MarkerSelectGui.isActive()) {
+		if (Config.useSelectWheel()) {
+			if (MarkerSelectGui.isActive()) {
 
-			if (!keyBindings[0].isKeyDown() || minecraft.gameSettings.keyBindAttack.isKeyDown()) {
-				MarkerSelectGui.triggerSelection();
-				MarkerSelectGui.setActive(false);
+				if (!keyBindings[0].isKeyDown() || minecraft.gameSettings.keyBindAttack.isKeyDown()) {
+					MarkerSelectGui.triggerSelection();
+					MarkerSelectGui.setActive(false);
+				}
+			} else if (keyBindings[0].isKeyDown()) {
+				MarkerSelectGui.setActive(true);
 			}
-		} else if (keyBindings[0].isKeyDown()) {
-			MarkerSelectGui.setActive(true);
+		} else if (keyBindings[0].isPressed()) {
+			pingBlockUnderCursor(TeamPing.PING_HERE);
 		}
-
 		if (keyBindings[1].isPressed()) {
 			sendSonar(Config.getSonarRange());
 		}
