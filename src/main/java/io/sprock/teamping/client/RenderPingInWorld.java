@@ -1,9 +1,5 @@
 package io.sprock.teamping.client;
 
-import static io.sprock.teamping.TeamPing.MOD_ID;
-import static io.sprock.teamping.TeamPing.pings;
-import static io.sprock.teamping.util.UtilMethods.distanceTo2D;
-import static io.sprock.teamping.util.UtilMethods.distanceTo3D;
 import static java.lang.Math.PI;
 import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
@@ -12,6 +8,11 @@ import static java.lang.Math.sin;
 import static net.minecraft.client.particle.EntityFX.interpPosX;
 import static net.minecraft.client.particle.EntityFX.interpPosY;
 import static net.minecraft.client.particle.EntityFX.interpPosZ;
+
+import static io.sprock.teamping.TeamPing.MOD_ID;
+import static io.sprock.teamping.TeamPing.pings;
+import static io.sprock.teamping.util.UtilMethods.distanceTo2D;
+import static io.sprock.teamping.util.UtilMethods.distanceTo3D;
 
 import java.awt.Color;
 
@@ -30,6 +31,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -66,7 +68,6 @@ public class RenderPingInWorld {
 					// JsonArray jcolor = data.get("color").getAsJsonArray();
 					String type = data.get("type").getAsString();
 					boolean isEntity = data.get("isEntity").getAsBoolean();
-
 
 					// jcolor.get(2).getAsInt());
 					Color color = new Color(255, 255, 255);
@@ -110,36 +111,28 @@ public class RenderPingInWorld {
 						// colors from https://colorswall.com/palette/59048
 						switch (type) {
 						case "x":
-							renderPing(trpy, 0, bx, by, bz, 249, 255, 254, pticks,
-									bp);
+							renderPing(trpy, 0, bx, by, bz, 249, 255, 254, pticks, bp);
 							break;
 						case "n":
-							renderPing(trpy, 1, bx, by, bz, 254, 216, 61, pticks,
-									bp);
+							renderPing(trpy, 1, bx, by, bz, 254, 216, 61, pticks, bp);
 							break;
 						case "q":
-							renderPing(trpy, 2, bx, by, bz, 249, 128, 29, pticks,
-									bp);
+							renderPing(trpy, 2, bx, by, bz, 249, 128, 29, pticks, bp);
 							break;
 						case "N":
-							renderPing(trpy, 3, bx, by, bz, 157, 157, 151, pticks,
-									bp);
+							renderPing(trpy, 3, bx, by, bz, 157, 157, 151, pticks, bp);
 							break;
 						case "Y":
-							renderPing(trpy, 4, bx, by, bz, 128, 199, 31, pticks,
-									bp);
+							renderPing(trpy, 4, bx, by, bz, 128, 199, 31, pticks, bp);
 							break;
 						case "d":
-							renderPing(trpy, 5, bx, by, bz, 60, 68, 170, pticks,
-									bp);
+							renderPing(trpy, 5, bx, by, bz, 60, 68, 170, pticks, bp);
 							break;
 						case "a":
-							renderPing(trpy, 6, bx, by, bz, 176, 46, 38, pticks,
-									bp);
+							renderPing(trpy, 6, bx, by, bz, 176, 46, 38, pticks, bp);
 							break;
 						case "m":
-							renderPing(trpy, 7, bx, by, bz, 199, 78, 189, pticks,
-									bp);
+							renderPing(trpy, 7, bx, by, bz, 199, 78, 189, pticks, bp);
 							break;
 						}
 					}
