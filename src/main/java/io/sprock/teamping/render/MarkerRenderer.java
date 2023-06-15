@@ -31,6 +31,7 @@ import net.minecraft.util.Vec3;
 
 import io.sprock.teamping.TeamPing;
 import io.sprock.teamping.client.Marker;
+import io.sprock.teamping.config.Config;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -56,6 +57,14 @@ public class MarkerRenderer {
 	private static double newy = 0;
 
 	private static final int[] BLOCK_RGB = { BLOCK_COLOR.getRed(), BLOCK_COLOR.getGreen(), BLOCK_COLOR.getBlue() };
+
+	public static int getMarkerRenderDistanceChunks() {
+		return Minecraft.getMinecraft().gameSettings.renderDistanceChunks + Config.getAdditionalRenderDistanceChunks();
+	}
+
+	public static boolean isRenderDistanceExpanded() {
+		return (Config.getAdditionalRenderDistanceChunks() > 0);
+	}
 
 	public static void onRenderWorldLast(float pticks) {
 		try {
@@ -83,11 +92,26 @@ public class MarkerRenderer {
 					double proximity3D = distanceTo3D(viewEntity, markerBlockPos);
 					double proximity2D = distanceTo2D(viewEntity, markerBlockPos);
 
-					if (proximity3D > HIDE_PROXIMITY
-							&& proximity2D < minecraft.gameSettings.renderDistanceChunks * 16) {
+					if (isRenderDistanceExpanded()) {
+						GlStateManager.disableFog();
+						// GlStateManager.disableLighting();
+						// GlStateManager.disableFog();
+
+						// GlStateManager.depthMask(true);
+						// GlStateManager.disableDepth();
+						// GlStateManager.enableBlend();
+						// GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+						// GlStateManager.disableLighting();
+						// GlStateManager.disableDepth();
+						// GlStateManager.disableCull();
+						// GlStateManager.disableAlpha();
+
+					}
+
+					if (proximity3D > HIDE_PROXIMITY && proximity2D < getMarkerRenderDistanceChunks() * 16) {
 
 						wRenderer.setTranslation(-interpPosX, -interpPosY, -interpPosZ);
-						GL11.glLineWidth((float) (10 / proximity3D));
+						GL11.glLineWidth((float) (2 / proximity3D));
 						AxisAlignedBB aabb = new AxisAlignedBB(markerBlockPos, markerBlockPos.add(1, 1, 1));
 
 						int lifefade = markerAge / 2;
@@ -126,6 +150,7 @@ public class MarkerRenderer {
 			GlStateManager.enableTexture2D();
 			GlStateManager.enableDepth();
 			GlStateManager.enableAlpha();
+			GlStateManager.enableFog();
 			GlStateManager.popAttrib();
 			GlStateManager.popMatrix();
 		}

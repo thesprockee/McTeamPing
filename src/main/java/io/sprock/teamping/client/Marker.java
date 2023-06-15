@@ -64,6 +64,7 @@ public class Marker {
 	public static String getCode(Symbol symbol) {
 		return encodeMap.get(symbol);
 	}
+
 	public String getCode() {
 		return getCode(symbol);
 	}

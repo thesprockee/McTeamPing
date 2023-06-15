@@ -7,5 +7,6 @@ public class ConfigValues {
 	public boolean enableMarkerSelectGUI = true;
 	public int sonarRange = 16;
 	public boolean filterDataMessages = true;
+	public int extraRenderChunks = 0;
 
 }

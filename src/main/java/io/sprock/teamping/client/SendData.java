@@ -13,6 +13,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 
 import io.sprock.teamping.config.Config;
+import io.sprock.teamping.render.MarkerRenderer;
 
 public class SendData {
 	public static long lastpingtime = 0;
@@ -21,7 +22,7 @@ public class SendData {
 	public static void pingBlockUnderCursor(String type) {
 		if ((System.currentTimeMillis() - lastpingtime) > 1000) {
 
-			int distance = min(Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16, 128);
+			int distance = min(MarkerRenderer.getMarkerRenderDistanceChunks() * 16, 128);
 			Entity e = getMouseOverExtended(distance).entityHit;
 			BlockPos bp;
 

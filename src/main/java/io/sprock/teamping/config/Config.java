@@ -49,6 +49,10 @@ public final class Config {
 		return values.sonarRange;
 	}
 
+	public static int getAdditionalRenderDistanceChunks() {
+		return values.extraRenderChunks;
+	}
+
 	@Nullable
 	public static Configuration getConfig() {
 		return config;
@@ -111,7 +115,8 @@ public final class Config {
 
 		values.dataMessagePrefix = config.getString("dataMessagePrefix", CATEGORY_CLIENT,
 				defaultValues.dataMessagePrefix, "Prefix data messages with...");
-
+		values.extraRenderChunks = config.getInt("extraRenderChunks", CATEGORY_CLIENT, defaultValues.extraRenderChunks,
+				0, 4, "extra distance to render markers. (also disables alpha)");
 		final boolean configChanged = config.hasChanged();
 
 		if (configChanged) {

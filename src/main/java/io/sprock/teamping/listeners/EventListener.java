@@ -155,7 +155,8 @@ public class EventListener {
 					String sourceId = parts[1];
 					int blockRange = (range > 0) ? range * 16 : 2048;
 					Entity renderView = minecraft.getRenderViewEntity();
-					if (!sourceId.equals(getSonarId()) && distanceTo2D(renderView, new BlockPos(x, y, z)) <= blockRange) {
+					if (!sourceId.equals(getSonarId())
+							&& distanceTo2D(renderView, new BlockPos(x, y, z)) <= blockRange) {
 						sendSonarReply(sourceId);
 					}
 					;
@@ -176,7 +177,7 @@ public class EventListener {
 
 	private void markBlock(int x, int y, int z, String type) {
 
-		markerList.add(Marker.fromData(x,  y, z, type));
+		markerList.add(Marker.fromData(x, y, z, type));
 
 		BlockPos playerPos = minecraft.thePlayer.getPosition();
 		Integer[] playerpos = new Integer[] { playerPos.getX(), playerPos.getY(), playerPos.getZ() };
