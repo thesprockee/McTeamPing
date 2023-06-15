@@ -6,8 +6,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import com.google.gson.JsonObject;
-
+import io.sprock.teamping.client.Marker;
 import io.sprock.teamping.commands.TeamPingCommand;
 import io.sprock.teamping.config.Config;
 import io.sprock.teamping.listeners.EventListener;
@@ -28,22 +27,9 @@ public class TeamPing {
 	public static final String MOD_NAME = "TeamPing";
 
 	public static Logger LOGGER;
-	public static final String PING_HERE = "x";
-	public static final String PING_NOTICE = "n";
-	public static final String PING_QUESTION = "q";
-	public static final String PING_NO = "N";
-	public static final String PING_YES = "Y";
-	public static final String PING_DEFEND = "d";
-	public static final String PING_ATTACK = "a";
-	public static final String PING_MINE = "m";
 
-	public static final String[] pingIds = new String[] { PING_HERE, PING_NOTICE, PING_QUESTION, PING_NO, PING_YES,
-			PING_DEFEND, PING_ATTACK, PING_MINE };
-
-	public static List<JsonObject> pings = new ArrayList<>();
-
+	public static List<Marker> markerList = new ArrayList<>();
 	private final EventListener eventListener;
-
 
 	public static String markerTexturePath = "textures/gui/markers.png";
 

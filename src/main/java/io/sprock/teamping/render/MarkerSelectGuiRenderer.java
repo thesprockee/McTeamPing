@@ -12,7 +12,6 @@ import static java.lang.Math.sqrt;
 import static java.lang.Math.toDegrees;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
-import static io.sprock.teamping.TeamPing.pingIds;
 import static io.sprock.teamping.client.SendData.pingBlockUnderCursor;
 
 import org.lwjgl.opengl.GL11;
@@ -26,6 +25,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 import io.sprock.teamping.TeamPing;
+import io.sprock.teamping.client.Marker;
 
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
@@ -434,7 +434,7 @@ public class MarkerSelectGuiRenderer {
 	}
 
 	public static void triggerSelection() {
-		pingBlockUnderCursor(pingIds[selectedMarkerType]);
+		pingBlockUnderCursor(Marker.getCode(selectedMarkerType));
 	}
 
 }

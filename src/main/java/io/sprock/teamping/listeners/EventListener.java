@@ -1,7 +1,7 @@
 package io.sprock.teamping.listeners;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
-import static io.sprock.teamping.TeamPing.pings;
+import static io.sprock.teamping.TeamPing.markerList;
 import static io.sprock.teamping.client.SendData.getSonarId;
 import static io.sprock.teamping.client.SendData.pingBlockUnderCursor;
 import static io.sprock.teamping.client.SendData.sendSonar;
@@ -10,13 +10,8 @@ import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
 import static io.sprock.teamping.util.UtilMethods.distanceTo2D;
 
 import java.util.Iterator;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -25,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
 
 import io.sprock.teamping.TeamPing;
+import io.sprock.teamping.client.Marker;
 import io.sprock.teamping.config.Config;
 import io.sprock.teamping.render.MarkerSelectGuiRenderer;
 
@@ -94,12 +90,12 @@ public class EventListener {
 			sfxPosition[2] = null;
 		}
 
-		Iterator<JsonObject> pingsIter = pings.iterator();
-		while (pingsIter.hasNext()) {
-			JsonObject data = pingsIter.next();
-			long time = data.get("time").getAsLong();
-			if ((System.currentTimeMillis() - time) > 15000) {
-				pingsIter.remove();
+		Iterator<Marker> markerIter = markerList.iterator();
+		while (markerIter.hasNext()) {
+			Marker marker = markerIter.next();
+
+			if ((System.currentTimeMillis() - marker.getTimestamp().getTime()) > 15000) {
+				markerIter.remove();
 			}
 		}
 
@@ -114,7 +110,7 @@ public class EventListener {
 				MarkerSelectGuiRenderer.setActive(true);
 			}
 		} else if (keyBindings[0].isPressed()) {
-			pingBlockUnderCursor(TeamPing.PING_HERE);
+			pingBlockUnderCursor(Marker.getCode(Marker.Symbol.HERE));
 		}
 		if (keyBindings[1].isPressed()) {
 			sendSonar(Config.getSonarRange());
@@ -166,7 +162,7 @@ public class EventListener {
 					break;
 				case "P":
 					if (suffix.equals(getSonarId())) {
-						markBlock(x, y, z, TeamPing.PING_NOTICE);
+						markBlock(x, y, z, Marker.getCode(Marker.Symbol.NOTICE));
 					}
 
 					break;
@@ -179,20 +175,8 @@ public class EventListener {
 	}
 
 	private void markBlock(int x, int y, int z, String type) {
-		JsonObject data = new JsonObject();
-		data.add("datatype", new JsonPrimitive("ping"));
 
-		JsonArray blockpos = new JsonArray();
-		blockpos.add(new JsonPrimitive(x));
-		blockpos.add(new JsonPrimitive(y));
-		blockpos.add(new JsonPrimitive(z));
-
-		data.add("bp", blockpos);
-		data.add("type", new JsonPrimitive(type));
-		data.add("uuid", new JsonPrimitive(UUID.randomUUID().toString().substring(0, 6)));
-		data.add("time", new JsonPrimitive(System.currentTimeMillis()));
-
-		pings.add(data);
+		markerList.add(Marker.fromData(x,  y, z, type));
 
 		BlockPos playerPos = minecraft.thePlayer.getPosition();
 		Integer[] playerpos = new Integer[] { playerPos.getX(), playerPos.getY(), playerPos.getZ() };

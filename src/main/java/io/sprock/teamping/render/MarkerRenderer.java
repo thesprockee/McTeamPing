@@ -10,16 +10,13 @@ import static net.minecraft.client.particle.EntityFX.interpPosY;
 import static net.minecraft.client.particle.EntityFX.interpPosZ;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
-import static io.sprock.teamping.TeamPing.pings;
+import static io.sprock.teamping.TeamPing.markerList;
 import static io.sprock.teamping.util.UtilMethods.distanceTo2D;
 import static io.sprock.teamping.util.UtilMethods.distanceTo3D;
 
 import java.awt.Color;
 
 import org.lwjgl.opengl.GL11;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -33,6 +30,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 
 import io.sprock.teamping.TeamPing;
+import io.sprock.teamping.client.Marker;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -75,15 +73,12 @@ public class MarkerRenderer {
 
 			minecraft.renderEngine.bindTexture(markerTexture);
 
-			if (pings.size() != 0) {
-				for (JsonObject data : pings) {
-					JsonArray jblock = data.get("bp").getAsJsonArray();
-					BlockPos markerBlockPos = new BlockPos(jblock.get(0).getAsInt(), jblock.get(1).getAsInt(),
-							jblock.get(2).getAsInt());
+			if (markerList.size() != 0) {
+				for (Marker marker : markerList) {
 
-					String markerType = data.get("type").getAsString();
-					long markerTimestamp = data.get("time").getAsLong();
-					int markerAge = (int) (System.currentTimeMillis() - markerTimestamp);
+					BlockPos markerBlockPos = marker.getBlockPos();
+
+					int markerAge = (int) (System.currentTimeMillis() - marker.getTimestamp().getTime());
 
 					double proximity3D = distanceTo3D(viewEntity, markerBlockPos);
 					double proximity2D = distanceTo2D(viewEntity, markerBlockPos);
@@ -113,34 +108,9 @@ public class MarkerRenderer {
 						float bz = markerBlockPos.getZ() + 0.5F;
 
 						wRenderer.setTranslation(-interpPosX + bx, -interpPosY, -interpPosZ + bz);
-						// colors from https://colorswall.com/palette/59048
 
-						switch (markerType) {
-						case "x":
-							renderMarker(alphaValue, 0, bx, by, bz, 249, 255, 254, pticks, markerBlockPos);
-							break;
-						case "n":
-							renderMarker(alphaValue, 1, bx, by, bz, 254, 216, 61, pticks, markerBlockPos);
-							break;
-						case "q":
-							renderMarker(alphaValue, 2, bx, by, bz, 249, 128, 29, pticks, markerBlockPos);
-							break;
-						case "N":
-							renderMarker(alphaValue, 3, bx, by, bz, 157, 157, 151, pticks, markerBlockPos);
-							break;
-						case "Y":
-							renderMarker(alphaValue, 4, bx, by, bz, 128, 199, 31, pticks, markerBlockPos);
-							break;
-						case "d":
-							renderMarker(alphaValue, 5, bx, by, bz, 60, 68, 170, pticks, markerBlockPos);
-							break;
-						case "a":
-							renderMarker(alphaValue, 6, bx, by, bz, 176, 46, 38, pticks, markerBlockPos);
-							break;
-						case "m":
-							renderMarker(alphaValue, 7, bx, by, bz, 199, 78, 189, pticks, markerBlockPos);
-							break;
-						}
+						renderMarker(marker, alphaValue, pticks);
+
 					}
 				}
 			}
@@ -235,8 +205,22 @@ public class MarkerRenderer {
 		tessellator.draw();
 	}
 
-	private static void renderMarker(int alpha, int texture, float bx, float by, float bz, int red, int green, int blue,
-			float pticks, BlockPos bp) {
+	/*
+	 * private static void renderMarker(int alpha, int texIndex, float bx, float by,
+	 * float bz, int red, int green, int blue, float pticks, BlockPos bp) {
+	 */
+	private static void renderMarker(Marker marker, int alpha, float pticks) {
+
+		BlockPos bp = marker.getBlockPos();
+		Color color = marker.getColor();
+
+		int red = color.getRed();
+		int blue = color.getBlue();
+		int green = color.getGreen();
+
+		float bx = bp.getX() + 0.5F;
+		float by = bp.getY() + 0.5F;
+		float bz = bp.getZ() + 0.5F;
 
 		Vec3 player = new Vec3(viewEntity.posX - bx, viewEntity.posY - by + viewEntity.getEyeHeight(),
 				viewEntity.posZ - bz);
@@ -252,7 +236,7 @@ public class MarkerRenderer {
 		wRenderer.pos(0, bp.getY() + 0.5, 0).color(red, green, blue, alpha / 2).endVertex();
 		wRenderer.pos(0, ypos + 1.5, 0).color(red, green, blue, alpha / 2).endVertex();
 		tessellator.draw();
-		double minU = 0.125 * texture;
+		double minU = 0.125 * marker.getTextureIndex();
 		double maxU = minU + 0.125;
 		GlStateManager.enableTexture2D();
 		wRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
