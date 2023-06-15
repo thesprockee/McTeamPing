@@ -12,6 +12,7 @@ import io.sprock.teamping.commands.TeamPingCommand;
 import io.sprock.teamping.config.Config;
 import io.sprock.teamping.listeners.EventListener;
 import io.sprock.teamping.registrations.KeyBindings;
+
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -42,6 +43,9 @@ public class TeamPing {
 	public static List<JsonObject> pings = new ArrayList<>();
 
 	private final EventListener eventListener;
+
+
+	public static String markerTexturePath = "textures/gui/markers.png";
 
 	public TeamPing() throws IOException {
 		KeyBindings.initialize();

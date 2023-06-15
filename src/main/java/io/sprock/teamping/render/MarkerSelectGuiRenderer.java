@@ -1,4 +1,4 @@
-package io.sprock.teamping.client;
+package io.sprock.teamping.render;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.atan2;
@@ -25,8 +25,12 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
+import io.sprock.teamping.TeamPing;
+
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+
 @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-public class MarkerSelectGui {
+public class MarkerSelectGuiRenderer {
 
 	private static final int minimumSelectDistance = 4;
 
@@ -38,8 +42,8 @@ public class MarkerSelectGui {
 	private static int transitionTickCounter = 0;
 	private static double transitionProgress = 0.0;
 
-	public static double cursorPosX = 0;
-	public static double cursorPosY = 0;
+	private static double cursorPosX = 0;
+	private static double cursorPosY = 0;
 	private static int previousMarkerTypeSelection = -1;
 	private static int selectedMarkerType = 0;
 
@@ -48,18 +52,19 @@ public class MarkerSelectGui {
 	}
 
 	public static void setActive(boolean isActive) {
-		MarkerSelectGui.isActive = isActive;
+		MarkerSelectGuiRenderer.isActive = isActive;
 	}
 
-	public static void render() {
+	public static void onGuiRenderEvent(RenderGameOverlayEvent.Pre event) {
 
-		if (MarkerSelectGui.isActive) {
+		if (MarkerSelectGuiRenderer.isActive) {
 			if (transitionTickCounter < transitionDuration) {
 				transitionTickCounter++;
 			}
 		} else if (transitionTickCounter > 0) {
 			transitionTickCounter--;
 		} else {
+			// reset the cursor to the center (on cross-hair)
 			cursorPosX = 0;
 			cursorPosY = 0;
 			return; // skip rendering
@@ -276,7 +281,7 @@ public class MarkerSelectGui {
 
 				double minU;
 				double maxU;
-				mc.renderEngine.bindTexture(new ResourceLocation(MOD_ID, "textures/gui/pings.png"));
+				mc.renderEngine.bindTexture(new ResourceLocation(MOD_ID, TeamPing.markerTexturePath));
 				GlStateManager.enableTexture2D();
 				wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 

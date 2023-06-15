@@ -25,8 +25,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
 
 import io.sprock.teamping.TeamPing;
-import io.sprock.teamping.client.MarkerSelectGui;
 import io.sprock.teamping.config.Config;
+import io.sprock.teamping.render.MarkerSelectGuiRenderer;
 
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -104,14 +104,14 @@ public class EventListener {
 		}
 
 		if (Config.isSelectWheelEnabled()) {
-			if (MarkerSelectGui.isActive()) {
+			if (MarkerSelectGuiRenderer.isActive()) {
 
 				if (!keyBindings[0].isKeyDown() || minecraft.gameSettings.keyBindAttack.isKeyDown()) {
-					MarkerSelectGui.triggerSelection();
-					MarkerSelectGui.setActive(false);
+					MarkerSelectGuiRenderer.triggerSelection();
+					MarkerSelectGuiRenderer.setActive(false);
 				}
 			} else if (keyBindings[0].isKeyDown()) {
-				MarkerSelectGui.setActive(true);
+				MarkerSelectGuiRenderer.setActive(true);
 			}
 		} else if (keyBindings[0].isPressed()) {
 			pingBlockUnderCursor(TeamPing.PING_HERE);
@@ -126,7 +126,7 @@ public class EventListener {
 	@SubscribeEvent
 	public void onGuiRenderEvent(RenderGameOverlayEvent.Pre event) {
 		if (event.type == RenderGameOverlayEvent.ElementType.BOSSHEALTH)
-			MarkerSelectGui.render();
+			MarkerSelectGuiRenderer.onGuiRenderEvent(event);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -181,8 +181,6 @@ public class EventListener {
 	private void markBlock(int x, int y, int z, String type) {
 		JsonObject data = new JsonObject();
 		data.add("datatype", new JsonPrimitive("ping"));
-
-		data.add("isEntity", new JsonPrimitive(false));
 
 		JsonArray blockpos = new JsonArray();
 		blockpos.add(new JsonPrimitive(x));
