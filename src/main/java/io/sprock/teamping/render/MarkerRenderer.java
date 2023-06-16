@@ -49,8 +49,8 @@ public class MarkerRenderer {
 	private static final ResourceLocation markerTexture = new ResourceLocation(MOD_ID, TeamPing.markerTexturePath);
 
 	private static final Minecraft minecraft = Minecraft.getMinecraft();
-	private static final Tessellator tessellator = Tessellator.getInstance();
-	private static final WorldRenderer wRenderer = tessellator.getWorldRenderer();
+	private static Tessellator tessellator = Tessellator.getInstance();
+	private static WorldRenderer wRenderer = tessellator.getWorldRenderer();
 	private static Entity viewEntity = minecraft.getRenderViewEntity();
 
 	private static double oldy = 0;
@@ -67,6 +67,11 @@ public class MarkerRenderer {
 	}
 
 	public static void onRenderWorldLast(float pticks) {
+
+		tessellator = Tessellator.getInstance();
+		wRenderer = tessellator.getWorldRenderer();
+		viewEntity = minecraft.getRenderViewEntity();
+
 		try {
 			GlStateManager.pushMatrix();
 			GlStateManager.pushAttrib();
@@ -230,10 +235,6 @@ public class MarkerRenderer {
 		tessellator.draw();
 	}
 
-	/*
-	 * private static void renderMarker(int alpha, int texIndex, float bx, float by,
-	 * float bz, int red, int green, int blue, float pticks, BlockPos bp) {
-	 */
 	private static void renderMarker(Marker marker, int alpha, float pticks) {
 
 		BlockPos bp = marker.getBlockPos();
