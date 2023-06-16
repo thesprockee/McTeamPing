@@ -30,7 +30,7 @@ public class Marker {
 
 	}
 
-	private static void initMaps() {
+	static {
 
 		// colors from https://colorswall.com/palette/59048
 
@@ -45,7 +45,7 @@ public class Marker {
 	}
 
 	public Marker(BlockPos blockPos, Symbol symbol) {
-		initMaps();
+
 		this.blockPos = blockPos;
 		this.symbol = symbol;
 
@@ -53,7 +53,7 @@ public class Marker {
 	}
 
 	public static Marker fromData(int x, int y, int z, String symbolCode) {
-		initMaps();
+
 		return new Marker(new BlockPos(x, y, z), decodeMap.get(symbolCode));
 	}
 
