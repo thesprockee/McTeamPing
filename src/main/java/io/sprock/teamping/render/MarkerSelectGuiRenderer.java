@@ -180,112 +180,70 @@ public class MarkerSelectGuiRenderer {
 			}
 			tes.draw();
 
-			double minU;
-			double maxU;
 			mc.renderEngine.bindTexture(new ResourceLocation(MOD_ID, TeamPing.markerTexturePath));
 			GlStateManager.enableTexture2D();
-			wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 
-			minU = 0.125 * 0;
-			maxU = minU + 0.125;
-			wr.pos(-8, -spokeEnd - 16, 0.0D).tex(minU, 0).color(8, 202, 209, min(255, alpha)).endVertex();// Top
-			wr.pos(-8, -spokeEnd, 0.0D).tex(minU, 1).color(8, 202, 209, min(255, alpha)).endVertex(); // Top
-			wr.pos(8, -spokeEnd, 0.0D).tex(maxU, 1).color(8, 202, 209, min(255, alpha)).endVertex(); // Top
-			wr.pos(8, -spokeEnd - 16, 0.0D).tex(maxU, 0).color(8, 202, 209, min(255, alpha)).endVertex(); // Top
+			double[][][] icons = {
 
-			tes.draw();
+					{
 
-			wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-			minU = 0.125 * 1;
-			maxU = minU + 0.125;
-			wr.pos(midx - 8, -midy - 8, 0).tex(minU, 0).color(199, 128, 232, min(255, alpha)).endVertex(); // Top-Right
+							{ -8.0, -spokeEnd - 16.0 }, { -8.0, -spokeEnd }, { 8.0, -spokeEnd }, { 8.0, -spokeEnd - 16 }
 
-			wr.pos(midx - 8, -midy + 8, 0).tex(minU, 1).color(199, 128, 232, min(255, alpha)).endVertex(); // Top-Right
+					}, {
 
-			wr.pos(midx + 8, -midy + 8, 0).tex(maxU, 1).color(199, 128, 232, min(255, alpha)).endVertex(); // Top-Right
+							{ midx - 8, -midy - 8 }, { midx - 8, -midy + 8 }, { midx + 8, -midy + 8 },
+							{ midx + 8, -midy - 8 },
 
-			wr.pos(midx + 8, -midy - 8, 0).tex(maxU, 0).color(199, 128, 232, min(255, alpha)).endVertex(); // Top-Right
+					}, {
 
-			tes.draw();
+							{ spokeEnd, -8 }, { spokeEnd, 8 }, { spokeEnd + 16, 8 }, { spokeEnd + 16, -8 },
 
-			wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-			minU = 0.125 * 2;
-			maxU = minU + 0.125;
-			wr.pos(spokeEnd, -8, 0.0D).tex(minU, 0).color(255, 180, 128, min(255, alpha)).endVertex(); // Right
+					}, {
 
-			wr.pos(spokeEnd, 8, 0.0D).tex(minU, 1).color(255, 180, 128, min(255, alpha)).endVertex(); // Right
+							{ midx - 8, midy - 8 }, { midx - 8, midy + 8 }, { midx + 8, midy + 8 },
+							{ midx + 8, midy - 8 },
 
-			wr.pos(spokeEnd + 16, 8, 0.0D).tex(maxU, 1).color(255, 180, 128, min(255, alpha)).endVertex(); // Right
+					}, {
 
-			wr.pos(spokeEnd + 16, -8, 0.0D).tex(maxU, 0).color(255, 180, 128, min(255, alpha)).endVertex(); // Right
+							{ -8, spokeEnd }, { -8, spokeEnd + 16 }, { 8, spokeEnd + 16 }, { 8, spokeEnd },
 
-			tes.draw();
+					}, {
 
-			wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-			minU = 0.125 * 3;
-			maxU = minU + 0.125;
-			wr.pos(midx - 8, midy - 8, 0).tex(minU, 0).color(89, 173, 246, min(255, alpha)).endVertex(); // Bottom-Right
+							{ -midx - 8, midy - 8 }, { -midx - 8, midy + 8 }, { -midx + 8, midy + 8 },
+							{ -midx + 8, midy - 8 },
 
-			wr.pos(midx - 8, midy + 8, 0).tex(minU, 1).color(89, 173, 246, min(255, alpha)).endVertex(); // Bottom-Right
+					}, {
 
-			wr.pos(midx + 8, midy + 8, 0).tex(maxU, 1).color(89, 173, 246, min(255, alpha)).endVertex(); // Bottom-Right
+							{ -spokeEnd - 16, -8 }, { -spokeEnd - 16, 8 }, { -spokeEnd, 8 }, { -spokeEnd, -8 },
 
-			wr.pos(midx + 8, midy - 8, 0).tex(maxU, 0).color(89, 173, 246, min(255, alpha)).endVertex(); // Bottom-Right
+					}, {
 
-			tes.draw();
+							{ -midx - 8, -midy - 8 }, { -midx - 8, -midy + 8 }, { -midx + 8, -midy + 8 },
+							{ -midx + 8, -midy - 8 },
 
-			wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-			minU = 0.125 * 4;
-			maxU = minU + 0.125;
-			wr.pos(-8, spokeEnd, 0.0D).tex(minU, 0).color(255, 105, 97, min(255, alpha)).endVertex(); // Bottom
+					}
 
-			wr.pos(-8, spokeEnd + 16, 0.0D).tex(minU, 1).color(255, 105, 97, min(255, alpha)).endVertex();// Bottom
+			};
 
-			wr.pos(8, spokeEnd + 16, 0.0D).tex(maxU, 1).color(255, 105, 97, min(255, alpha)).endVertex(); // Bottom
-
-			wr.pos(8, spokeEnd, 0.0D).tex(maxU, 0).color(255, 105, 97, min(255, alpha)).endVertex(); // Bottom
-
-			tes.draw();
-
-			wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-			minU = 0.125;
-			maxU = minU + 0.125;
-			wr.pos(-midx - 8, midy - 8, 0).tex(minU, 0).color(66, 214, 164, min(255, alpha)).endVertex(); // Bottom-Left
-
-			wr.pos(-midx - 8, midy + 8, 0).tex(minU, 1).color(66, 214, 164, min(255, alpha)).endVertex(); // Bottom-Left
-
-			wr.pos(-midx + 8, midy + 8, 0).tex(maxU, 1).color(66, 214, 164, min(255, alpha)).endVertex(); // Bottom-Left
-
-			wr.pos(-midx + 8, midy - 8, 0).tex(maxU, 0).color(66, 214, 164, min(255, alpha)).endVertex(); // Bottom-Left
-
-			tes.draw();
-
-			wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-			minU = 0.125 * 6;
-			maxU = minU + 0.125;
-			wr.pos(-spokeEnd - 16, -8, 0.0D).tex(minU, 0).color(157, 148, 255, min(255, alpha)).endVertex();// Right
-
-			wr.pos(-spokeEnd - 16, 8, 0.0D).tex(minU, 1).color(157, 148, 255, min(255, alpha)).endVertex(); // Right
-
-			wr.pos(-spokeEnd, 8, 0.0D).tex(maxU, 1).color(157, 148, 255, min(255, alpha)).endVertex(); // Right
-
-			wr.pos(-spokeEnd, -8, 0.0D).tex(maxU, 0).color(157, 148, 255, min(255, alpha)).endVertex(); // Right
-
-			tes.draw();
-
-			wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-			minU = 0.125 * 7;
-			maxU = minU + 0.125;
-			wr.pos(-midx - 8, -midy - 8, 0).tex(minU, 0).color(248, 243, 141, min(255, alpha)).endVertex(); // Top-Left
-
-			wr.pos(-midx - 8, -midy + 8, 0).tex(minU, 1).color(248, 243, 141, min(255, alpha)).endVertex(); // Top-Left
-
-			wr.pos(-midx + 8, -midy + 8, 0).tex(maxU, 1).color(248, 243, 141, min(255, alpha)).endVertex(); // Top-Left
-
-			wr.pos(-midx + 8, -midy - 8, 0).tex(maxU, 0).color(248, 243, 141, min(255, alpha)).endVertex(); // Top-Left
-
-			tes.draw();
-
+			double minU;
+			double maxU;
+			for (int x = 0; x < 8; x++) {
+				minU = 0.125 * x;
+				maxU = minU + 0.125;
+				Color c = Marker.getColor(x);
+				double[][] v = icons[x];
+				int iconAlphaValue = (selectedSymbolIndex == x) ? 255 : 192;
+				wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+				wr.pos(v[0][0], v[0][1], 0.0D).tex(minU, 0).color(c.getRed(), c.getGreen(), c.getBlue(), iconAlphaValue)
+						.endVertex();
+				wr.pos(v[1][0], v[1][1], 0.0D).tex(minU, 1).color(c.getRed(), c.getGreen(), c.getBlue(), iconAlphaValue)
+						.endVertex();
+				wr.pos(v[2][0], v[2][1], 0.0D).tex(maxU, 1).color(c.getRed(), c.getGreen(), c.getBlue(), iconAlphaValue)
+						.endVertex();
+				wr.pos(v[3][0], v[3][1], 0.0D).tex(maxU, 0).color(c.getRed(), c.getGreen(), c.getBlue(), iconAlphaValue)
+						.endVertex();
+				tes.draw();
+			}
 			GlStateManager.disableTexture2D();
 
 		} catch (Exception e) {
