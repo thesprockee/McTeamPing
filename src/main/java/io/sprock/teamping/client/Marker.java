@@ -35,7 +35,11 @@ public class Marker {
 	}
 
 	public static Marker fromData(int x, int y, int z, String symbolCode) {
-		return new Marker(new BlockPos(x, y, z), decodeMap.get(symbolCode));
+		return fromData(x, y, z, decodeMap.get(symbolCode));
+	}
+
+	public static Marker fromData(int x, int y, int z, Symbol symbol) {
+		return new Marker(new BlockPos(x, y, z), symbol);
 	}
 
 	public static String getCode(Symbol symbol) {
@@ -81,7 +85,9 @@ public class Marker {
 	public Symbol getSymbol() {
 		return symbol;
 	}
-
+	public static Symbol getSymbol(String s) {
+		return decodeMap.get(s);
+	}
 	public int getTextureIndex() {
 		return symbol.ordinal();
 

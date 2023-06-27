@@ -2,79 +2,48 @@ package io.sprock.teamping.client;
 
 import static java.lang.Math.min;
 
+import static io.sprock.teamping.util.UtilMethods.distanceTo2D;
+
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 
+import io.sprock.teamping.TeamPing;
 import io.sprock.teamping.config.Config;
+import io.sprock.teamping.handlers.MarkerHandler;
+import io.sprock.teamping.hooks.NetworkPlayerInfoHook;
 import io.sprock.teamping.render.MarkerRenderer;
 
 public class ChatProtocol {
+	public static enum Action {
+		BLOCK_PING, SONAR_PING, SONAR_PONG
+	}
+
+	private static final EnumMap<Action, String> encodeMap = new EnumMap<>(Action.class);
+	private static final Map<String, Action> decodeMap = new HashMap<String, Action>();
+
+	private static String commandRegex = "([psP]):([-0-9]{1,8})/([-0-9]{1,8})/([-0-9]{1,8}):([A-z0-9,]+)";
+	private static Pattern commandPattern = Pattern.compile(commandRegex);
 	public static long lastpingtime = 0;
 	private static final Minecraft minecraft = Minecraft.getMinecraft();
 
-	public static void pingBlockUnderCursor(String type) {
-		if ((System.currentTimeMillis() - lastpingtime) > 1000) {
+	static {
 
-			int distance = min(MarkerRenderer.getMarkerRenderDistanceChunks() * 16, 128);
-			Entity e = getMouseOverExtended(distance).entityHit;
-			BlockPos bp;
-
-			if (e != null) {
-				bp = e.getPosition();
-			} else {
-				bp = getMouseOverExtended(distance).getBlockPos();
-			}
-
-			pingCoordinates(bp.getX(), bp.getY(), bp.getZ(), type);
-
-		}
-	}
-
-	public static String getSonarId() {
-		return String.valueOf(Math.abs(minecraft.thePlayer.getPersistentID().hashCode()));
-	}
-
-	public static void sendSonar(int range) {
-		BlockPos bp = minecraft.thePlayer.getPosition();
-		ArrayList<String> suffix = new ArrayList<String>();
-		suffix.add(String.valueOf(range));
-		suffix.add(getSonarId());
-		sendCommand("s", bp.getX(), bp.getY(), bp.getZ(), String.join(",", suffix));
-	}
-
-	public static void sendSonarReply(String id) {
-		BlockPos playerPos = minecraft.thePlayer.getPosition();
-		sendCommand("P", playerPos.getX(), playerPos.getY(), playerPos.getZ(), id);
-	}
-
-	public static void pingCoordinates(int x, int y, int z, String type) {
-		sendCommand("p", x, y, z, type);
-
-		lastpingtime = System.currentTimeMillis();
-	}
-
-	public static void sendCommand(String prefix, int x, int y, int z, String suffix) {
-		ArrayList<String> components = new ArrayList<String>();
-		String messagePrefix = Config.getPingMessagePrefix();
-
-		if (!messagePrefix.isEmpty()) {
-			components.add(messagePrefix + " ");
-		}
-
-		components.add(prefix);
-
-		components.add(String.join("/", String.valueOf(x), String.valueOf(y), String.valueOf(z)));
-
-		components.add(suffix);
-
-		minecraft.thePlayer.sendChatMessage(String.join(":", components));
+		putMaps(Action.BLOCK_PING, "p");
+		putMaps(Action.SONAR_PING, "S");
+		putMaps(Action.SONAR_PONG, "P");
 	}
 
 	private static MovingObjectPosition getMouseOverExtended(float dist) {
@@ -130,4 +99,125 @@ public class ChatProtocol {
 		}
 		return returnMOP;
 	}
+
+	public static String getSonarId() {
+		return String.valueOf(Math.abs(minecraft.thePlayer.getPersistentID().hashCode()));
+	}
+
+	public static void pingBlockUnderCursor(String type) {
+		if ((System.currentTimeMillis() - lastpingtime) > 1000) {
+
+			int distance = min(MarkerRenderer.getMarkerRenderDistanceChunks() * 16, 128);
+			Entity e = getMouseOverExtended(distance).entityHit;
+			BlockPos bp;
+
+			if (e != null) {
+				bp = e.getPosition();
+			} else {
+				bp = getMouseOverExtended(distance).getBlockPos();
+			}
+
+			pingCoordinates(bp.getX(), bp.getY(), bp.getZ(), type);
+
+		}
+	}
+
+	public static void pingCoordinates(int x, int y, int z, String type) {
+		sendCommand(Action.BLOCK_PING, x, y, z, type);
+
+		lastpingtime = System.currentTimeMillis();
+	}
+
+	public static boolean processChatMessage(String chatMessage) {
+		Matcher matcher = commandPattern.matcher(chatMessage);
+		if (matcher.find()) {
+			try {
+
+				Action action = decodeMap.get(matcher.group(1));
+
+				int x = Integer.parseInt(matcher.group(2));
+				int y = Integer.parseInt(matcher.group(3));
+				int z = Integer.parseInt(matcher.group(4));
+
+				String suffix = matcher.group(5);
+				String[] parts = suffix.split(",");
+
+				switch (action) {
+
+				case BLOCK_PING:
+					MarkerHandler.markBlock(x, y, z, Marker.getSymbol(suffix.substring(0, 1)));
+					break;
+
+				case SONAR_PING:
+					Iterable<NetworkPlayerInfo> players = Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap();
+					for (NetworkPlayerInfo player : players) {
+						NetworkPlayerInfoHook.putPlayerInMap(player);
+					}
+
+					int range = Integer.parseInt(parts[0]);
+					String sourceId = parts[1];
+					int blockRange = (range > 0) ? range * 16 : 2048;
+					Entity renderView = minecraft.getRenderViewEntity();
+					if (!sourceId.equals(getSonarId())
+							&& distanceTo2D(renderView, new BlockPos(x, y, z)) <= blockRange) {
+						sendSonarReply(sourceId);
+					}
+					break;
+
+				case SONAR_PONG:
+					if (suffix.equals(getSonarId())) {
+						MarkerHandler.markBlock(x, y, z, Marker.Symbol.NOTICE);
+					}
+
+					break;
+				}
+
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				TeamPing.LOGGER.warn("Could not process:" + e.getStackTrace());
+			}
+
+			return true;
+		} else {
+
+			return false;
+		}
+	}
+
+	private static void putMaps(Action action, String code) {
+		encodeMap.put(action, code);
+		decodeMap.put(code, action);
+	}
+
+	public static void sendCommand(Action commandCode, int x, int y, int z, String suffix) {
+		ArrayList<String> components = new ArrayList<String>();
+		String messagePrefix = Config.getPingMessagePrefix();
+
+		if (!messagePrefix.isEmpty()) {
+			components.add(messagePrefix + " ");
+		}
+
+		components.add(encodeMap.get(commandCode));
+
+		components.add(String.join("/", String.valueOf(x), String.valueOf(y), String.valueOf(z)));
+
+		components.add(suffix);
+
+		minecraft.thePlayer.sendChatMessage(String.join(":", components));
+	}
+
+	public static void sendSonar(int range) {
+		BlockPos bp = minecraft.thePlayer.getPosition();
+		ArrayList<String> suffix = new ArrayList<String>();
+		suffix.add(String.valueOf(range));
+		suffix.add(getSonarId());
+		sendCommand(Action.SONAR_PING, bp.getX(), bp.getY(), bp.getZ(), String.join(",", suffix));
+
+	}
+
+	public static void sendSonarReply(String id) {
+		BlockPos playerPos = minecraft.thePlayer.getPosition();
+		sendCommand(Action.SONAR_PONG, playerPos.getX(), playerPos.getY(), playerPos.getZ(), id);
+	}
+
 }

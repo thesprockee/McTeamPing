@@ -10,11 +10,11 @@ import static net.minecraft.client.particle.EntityFX.interpPosY;
 import static net.minecraft.client.particle.EntityFX.interpPosZ;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
-import static io.sprock.teamping.TeamPing.markerList;
 import static io.sprock.teamping.util.UtilMethods.distanceTo2D;
 import static io.sprock.teamping.util.UtilMethods.distanceTo3D;
 
 import java.awt.Color;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
@@ -32,6 +32,7 @@ import net.minecraft.util.Vec3;
 import io.sprock.teamping.TeamPing;
 import io.sprock.teamping.client.Marker;
 import io.sprock.teamping.config.Config;
+import io.sprock.teamping.handlers.MarkerHandler;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -86,6 +87,8 @@ public class MarkerRenderer {
 			newy = viewEntity.posY;
 
 			minecraft.renderEngine.bindTexture(markerTexture);
+
+			List<Marker> markerList = MarkerHandler.getMarkers();
 
 			if (markerList.size() != 0) {
 				for (Marker marker : markerList) {

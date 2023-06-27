@@ -1,12 +1,9 @@
 package io.sprock.teamping;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import io.sprock.teamping.client.Marker;
 import io.sprock.teamping.commands.TeamPingCommand;
 import io.sprock.teamping.config.Config;
 import io.sprock.teamping.listeners.EventListener;
@@ -28,7 +25,6 @@ public class TeamPing {
 
 	public static Logger LOGGER;
 
-	public static List<Marker> markerList = new ArrayList<>();
 	private final EventListener eventListener;
 
 	public static String markerTexturePath = "textures/gui/markers.png";
