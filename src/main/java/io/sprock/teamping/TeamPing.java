@@ -62,5 +62,6 @@ public class TeamPing {
 
 		MinecraftForge.EVENT_BUS.register(eventListener);
 		ClientCommandHandler.instance.registerCommand(new TeamPingCommand());
+
 	}
 }

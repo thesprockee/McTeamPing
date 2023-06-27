@@ -15,7 +15,7 @@ import net.minecraft.util.Vec3;
 import io.sprock.teamping.config.Config;
 import io.sprock.teamping.render.MarkerRenderer;
 
-public class SendData {
+public class ChatProtocol {
 	public static long lastpingtime = 0;
 	private static final Minecraft minecraft = Minecraft.getMinecraft();
 

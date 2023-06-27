@@ -2,10 +2,10 @@ package io.sprock.teamping.listeners;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
 import static io.sprock.teamping.TeamPing.markerList;
-import static io.sprock.teamping.client.SendData.getSonarId;
-import static io.sprock.teamping.client.SendData.pingBlockUnderCursor;
-import static io.sprock.teamping.client.SendData.sendSonar;
-import static io.sprock.teamping.client.SendData.sendSonarReply;
+import static io.sprock.teamping.client.ChatProtocol.getSonarId;
+import static io.sprock.teamping.client.ChatProtocol.pingBlockUnderCursor;
+import static io.sprock.teamping.client.ChatProtocol.sendSonar;
+import static io.sprock.teamping.client.ChatProtocol.sendSonarReply;
 import static io.sprock.teamping.registrations.KeyBindings.keyBindings;
 import static io.sprock.teamping.util.UtilMethods.distanceTo2D;
 

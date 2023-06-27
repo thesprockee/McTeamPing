@@ -12,7 +12,7 @@ import static java.lang.Math.sqrt;
 import static java.lang.Math.toDegrees;
 
 import static io.sprock.teamping.TeamPing.MOD_ID;
-import static io.sprock.teamping.client.SendData.pingBlockUnderCursor;
+import static io.sprock.teamping.client.ChatProtocol.pingBlockUnderCursor;
 
 import java.awt.Color;
 
