@@ -10,30 +10,20 @@ import net.minecraft.util.BlockPos;
 
 public class Marker {
 
+	// The order of this ENUM shall match the texture order
 	public static enum Symbol {
 		HERE, NOTICE, QUESTION, NO, YES, DEFEND, ATTACK, MINE
 	}
 
-	private Symbol symbol;
-
 	private BlockPos blockPos;
 	private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-	private static EnumMap<Symbol, String> encodeMap = new EnumMap<>(Symbol.class);
+	private static final EnumMap<Symbol, String> encodeMap = new EnumMap<>(Symbol.class);
 	private static final Map<String, Symbol> decodeMap = new HashMap<String, Symbol>();
-	private static EnumMap<Symbol, Color> colorMap = new EnumMap<>(Symbol.class);
-
-	private static void putMaps(Symbol symbol, String s, Color c) {
-		encodeMap.put(symbol, s);
-		decodeMap.put(s, symbol);
-		colorMap.put(symbol, c);
-
-	}
+	private static final EnumMap<Symbol, Color> colorMap = new EnumMap<>(Symbol.class);
 
 	static {
-
 		// colors from https://colorswall.com/palette/59048
-
 		putMaps(Symbol.HERE, "x", new Color(249, 255, 254));
 		putMaps(Symbol.NOTICE, "n", new Color(254, 216, 61));
 		putMaps(Symbol.QUESTION, "q", new Color(249, 128, 29));
@@ -44,25 +34,32 @@ public class Marker {
 		putMaps(Symbol.MINE, "m", new Color(199, 78, 189));
 	}
 
-	public Marker(BlockPos blockPos, Symbol symbol) {
+	public static Marker fromData(int x, int y, int z, String symbolCode) {
+		return new Marker(new BlockPos(x, y, z), decodeMap.get(symbolCode));
+	}
 
+	public static String getCode(Symbol symbol) {
+		return encodeMap.get(symbol);
+	}
+
+	private static void putMaps(Symbol symbol, String s, Color c) {
+		encodeMap.put(symbol, s);
+		decodeMap.put(s, symbol);
+		colorMap.put(symbol, c);
+
+	}
+
+	private Symbol symbol;
+
+	public Marker(BlockPos blockPos, Symbol symbol) {
 		this.blockPos = blockPos;
 		this.symbol = symbol;
 
 		timestamp = new Timestamp(System.currentTimeMillis());
 	}
 
-	public static Marker fromData(int x, int y, int z, String symbolCode) {
-
-		return new Marker(new BlockPos(x, y, z), decodeMap.get(symbolCode));
-	}
-
 	public BlockPos getBlockPos() {
 		return blockPos;
-	}
-
-	public static String getCode(Symbol symbol) {
-		return encodeMap.get(symbol);
 	}
 
 	public String getCode() {
@@ -77,6 +74,10 @@ public class Marker {
 		return colorMap.get(symbol);
 	}
 
+	public static Color getColor(int index) {
+		return colorMap.get(Symbol.values()[index]);
+	}
+
 	public Symbol getSymbol() {
 		return symbol;
 	}
@@ -84,6 +85,10 @@ public class Marker {
 	public int getTextureIndex() {
 		return symbol.ordinal();
 
+	}
+
+	public static int getTextureIndex(Symbol symbol) {
+		return symbol.ordinal();
 	}
 
 	public Timestamp getTimestamp() {
